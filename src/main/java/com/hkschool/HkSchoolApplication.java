@@ -9,7 +9,6 @@ import com.hkschool.service.HKSPSService;
 import com.hkschool.service.HKSSSService;
 import com.hkschool.service.KGService;
 import com.hkschool.service.MSKGService;
-import com.hkschool.service.MSPSService;
 import com.hkschool.service.PSService;
 import com.hkschool.service.SSService;
 
@@ -24,63 +23,58 @@ public class HkSchoolApplication {
 
 	@Autowired
 	SSService sSService;
-
+	
 	@Autowired
 	HKSKGService hKSKGService;
-
+	
 	@Autowired
 	HKSPSService hKSPSService;
-
+	
 	@Autowired
-	HKSSSService hKSSSService;
+	HKSSSService hKSSSService; 
 	
 	@Autowired
 	MSKGService mSKGService;
-	//private MSKGService MSKGService;
-	
-	@Autowired
-	MSPSService mSPSService;
+
 
 	@Autowired
-	public HkSchoolApplication(KGService schoolService1, PSService schoolService2, SSService schoolService3, HKSKGService schoolService4, HKSPSService hKSPSService, HKSSSService hKSSSService, MSKGService mSKGService, MSPSService mSPSService) {
+	public HkSchoolApplication(KGService schoolService1, PSService schoolService2, SSService schoolService3 , HKSKGService schoolservice4 , HKSPSService schoolservice6, HKSSSService schoolservice7, MSKGService schoolservice5 ) {
 		this.kGService = schoolService1;
 		this.pSService = schoolService2;
 		this.sSService = schoolService3;
-		this.hKSKGService = schoolService4;
-		this.hKSPSService = hKSPSService;
-		this.hKSSSService = hKSSSService;
-		this.mSKGService =  mSKGService;
-		this.mSPSService = mSPSService;
+		this.hKSKGService = schoolservice4;
+		this.mSKGService = schoolservice5;
+		this.hKSPSService = schoolservice6;
+		this.hKSSSService = schoolservice7;
 		loadDataFromGovermentSites();
-		loadDataFromSchoolandhk();
-		loadDataFromMySchoolhk();
+		loadDataFromSchoolandSites();
+		loadDataFromMyschoolhkSites();
 	}
 
-	private void loadDataFromMySchoolhk() {
+	private void loadDataFromMyschoolhkSites() {
 		//mSKGService.pull();
-		//mSPSService.pull();
 	}
-
 	private void loadDataFromGovermentSites() {
 		try {
-			//kGService.pull();
-			//pSService.pull();
-			//sSService.pull();
+			kGService.pull();
+			pSService.pull();
+			sSService.pull();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void loadDataFromSchoolandhk() {
+	private void loadDataFromSchoolandSites() {
 		try {
-			//hKSKGService.pull();
-			//hKSPSService.pull();
+			hKSKGService.pull();
+			hKSPSService.pull();
 			hKSSSService.pull();
-		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(HkSchoolApplication.class, args);

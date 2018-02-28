@@ -1,9 +1,8 @@
 package com.hkschool.service;
 
-import com.hkschool.models.PSEntity;
-import com.hkschool.repository.PSJpaRepository;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,25 +14,48 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import com.hkschool.models.PSEntity;
+import com.hkschool.repository.PSJpaRepository;
+import com.hkschool.util.AddressLocater;
+
 @Component
 public class PSService {
 
 	@Resource
 	private PSJpaRepository pSchoolJpaRepository;
-
-	public void pull() {
-		String schoolTypes[] = {"Gov", "Aided", "Private", "DSS"};
-		for(String schoolType : schoolTypes) {
+	
+public void pull() throws IOException {
+		
+		Map<String, String> districts = new HashMap<String, String>();
+		districts.put("1", "中西區");
+		districts.put("2", "港島東區");
+		districts.put("3", "離島區");
+		districts.put("4", "南區");
+		districts.put("5", "灣仔區");
+		districts.put("6", "葵青區");
+		districts.put("7", "荃灣區");
+		districts.put("8", "屯門區");
+		districts.put("9", "元朗區");
+		districts.put("10", "北區");
+		districts.put("11", "沙田區");
+		districts.put("12", "大埔區");
+		districts.put("13", "九龍城區");
+		districts.put("14", "觀塘區");
+		districts.put("15", "西貢區");
+		districts.put("16", "深水埗區");
+		districts.put("17", "黃大仙區");
+		districts.put("18", "油尖旺區");
+		for (String districtId : districts.keySet()) {
 			try {
-				pull(schoolType);
-			} catch(Exception e) {
-				
+				pull(districtId, districts.get(districtId));
+			} catch (Exception e) {
 			}
 		}
-	}
+}
 	
-	public void pull(String schoolType) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_list.php?lang_id=1&frmMode=pagebreak&district_id=0&sch_type=" + schoolType + "&sch_name=").get();
+
+	public void pull(String districtId, String district) throws IOException {
+		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId+"&sch_type=&sch_name=").get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(1); // school list
@@ -49,11 +71,12 @@ public class PSService {
 			String url = link.attr("href");
 			Matcher matcher = pattern.matcher(url);
 			if (url != null && matcher.find()) {
-				String schoolName = link.text();
+				String schoolName = link.text().replaceAll("[A-Za-z '\\-_]+", "");
 				String schoolId = matcher.group(1);
+				//pull(schoolName, schoolId);
 				if(pSchoolJpaRepository.findBySchoolId(schoolId) == null){
 					try {
-						pSchoolJpaRepository.save(pull(schoolName, schoolId));
+						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 					} catch (Exception e) {
 						System.out.println("Failed to add " + schoolName + " " + cnt);
 						System.out.println("Error : " + e.getMessage());
@@ -68,8 +91,8 @@ public class PSService {
 
 	}
 	
-	private PSEntity pull(String schoolName, String schoolId) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_detail.php?lang_id=1&sch_id=" + schoolId).get();
+	private PSEntity pull(String district, String schoolName, String schoolId) throws IOException {
+		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_detail.php?lang_id=2&sch_id=" + schoolId).get();
 		Elements totalTables = doc.getElementsByTag("table");
 		
 		Element mainTable = totalTables.get(0); // school address
@@ -80,8 +103,56 @@ public class PSService {
 		String fax = tds.get(8).text();
 		String website = tds.get(11).text();
 		
+		mainTable = totalTables.get(10);//School Characteristics
+		tds = mainTable.getElementsByTag("td");
+		
+		String SchoolManagementOrganisation = tds.get(3).text();
+		String IncorporatedManagementCommittee_SchoolManagementCommittee_ManagementCommittee = tds.get(6).text();
+		String SchoolGreenPolicy = tds.get(9).text();
+		String SchoolsMajorConcerns = tds.get(12).text();
+		String LearningAndTeachingStrategies = tds.get(16).text();
+		String DevelopmentofKeyTasks = tds.get(19).text();
+		String DevelopmentofGenericSkills = tds.get(22).text();
+		String WholeSchoolApproachtoCaterforStudentDiversity = tds.get(26).text();
+		String CurriculumTailoringandAdaptation = tds.get(29).text();
+		String Home_SchoolCooperation = tds.get(33).text();
+		String SchoolEthos = tds.get(36).text();
+		String SchoolDevelopmentPlan = tds.get(40).text();
+		String TeacherProfessionalTrainingAndDevelopment = tds.get(43).text();
+		String FeeRemissionScheme = tds.get(46).text();
+		String Others = tds.get(49).text();
+		
+		mainTable = totalTables.get(7);//School Life
+		tds = mainTable.getElementsByTag("td");
+		
+		String time = "";
+		String NumberofSchoolDaysperweek = tds.get(2).text();
+		String Numberofperiodsperday = tds.get(5).text();
+		String Durationofeachnormalperiod = tds.get(8).text();
+		String Schoolstartsat = tds.get(11).text();
+		String Schoolendsat = tds.get(14).text();
+		String Lunchtime = tds.get(17).text();
+		String Luncharrangement = tds.get(20).text();
+		String Healthyschoollife = tds.get(23).text();
+		String Remarks = tds.get(26).text();
+		if(! "0".equals(Schoolstartsat)) {
+			time = time + "AM ";
+		}
+		if(! "0".equals(Schoolendsat)) {
+			time = time + "PM ";
+		}
+		
+		mainTable = totalTables.get(6);//Performance Assessment
+		tds = mainTable.getElementsByTag("td");
+		
+		String NumberofTestperyear = tds.get(2).text();
+		String NumberofExamperyear = tds.get(5).text();
+		String Streamingarrangement = tds.get(8).text();
+		String DiversifiedAssessmentforLearning = tds.get(11).text();
+		
 		mainTable = totalTables.get(1); // school address
 		tds = mainTable.getElementsByTag("td");
+		
 		String supervisorChairmanofManagementCommittee = tds.get(2).text();
 		String schoolHead = tds.get(5).text();
 		String hastheIncorporatedManagementCommitteebeenestablished = tds.get(8).text();
@@ -100,7 +171,7 @@ public class PSService {
 		String parentTeacherAssociation = tds.get(47).text();
 		String schoolAlumniAssociation = tds.get(50).text();
 
-		mainTable = totalTables.get(2);
+		mainTable = totalTables.get(2);//Fees
 		tds = mainTable.getElementsByTag("td");
 	
 		String schoolFee = tds.get(2).text();
@@ -109,7 +180,7 @@ public class PSService {
 		String approvedChargesforSpecificPurposes = tds.get(11).text();
 		String otherCharges = tds.get(14).text();
 		
-		mainTable = totalTables.get(3);
+		mainTable = totalTables.get(3);//Class structure
 		tds = mainTable.getElementsByTag("td");
 
 		String numberOfClassroom = tds.get(2).text();
@@ -120,7 +191,7 @@ public class PSService {
 		String facilitySupportforStudentswithSpecialEducationalNeeds = tds.get(17).text();
 		String others = tds.get(20).text();
 
-		mainTable = totalTables.get(4);
+		mainTable = totalTables.get(4);//teacher
 		tds = mainTable.getElementsByTag("td");
 
 		String numberOfteachersintheapprovedestablishment = tds.get(2).text();
@@ -132,60 +203,21 @@ public class PSService {
 		String workExperience0_4years = tds.get(22).text();
 		String workExperience5_9years = tds.get(25).text();
 		String workExperience10yearsorabove = tds.get(28).text();
-
-		System.out.println(schoolFee);
-		System.out.println(tongFai);
-		System.out.println(PTAFee);
-		System.out.println(approvedChargesforSpecificPurposes);
-		System.out.println(otherCharges);
-		System.out.println(address);
-		System.out.println(phone);
-		System.out.println(email);
-		System.out.println(fax);
-		System.out.println(website);
-		System.out.println(supervisorChairmanofManagementCommittee);
-		System.out.println(schoolHead);
-		System.out.println(hastheIncorporatedManagementCommitteebeenestablished);
-		System.out.println(schoolType);
-		System.out.println(studentGender);
-		System.out.println(sponsoringBody);
-		System.out.println(religion);
-		System.out.println(yearofCommencementofOperation);
-		System.out.println(schoolMotto);
-		System.out.println(schoolSize);
-		System.out.println(throughTrainSecondarySchool);
-		System.out.println(feederSecondarySchool);
-		System.out.println(nominatedSecondarySchool);
-		System.out.println(mediumofInstruction);
-		System.out.println(schoolBusService);
-		System.out.println(parentTeacherAssociation);
-		System.out.println(schoolAlumniAssociation);
-		System.out.println(numberOfClassroom);
-		System.out.println(numberOfSchoolHall);
-		System.out.println(numberOfPlayground);
-		System.out.println(numberOfLibrary);
-		System.out.println(specialRooms);
-		System.out.println(facilitySupportforStudentswithSpecialEducationalNeeds);
-		System.out.println(others);
-		System.out.println(numberOfteachersintheapprovedestablishment);
-		System.out.println(totalnumberOfteachersintheschool);
-		System.out.println(teacherCertificateDiplomainEducation);
-		System.out.println(bachelorDegree);
-		System.out.println(masterDoctorateDegreeorabove);
-		System.out.println(specialEducationTraining);
-		System.out.println(workExperience0_4years);
-		System.out.println(workExperience5_9years);
-		System.out.println(workExperience10yearsorabove);
 	
 		PSEntity schoolEntity = new PSEntity();
+		
 		schoolEntity.setSchoolName(schoolName);
 		schoolEntity.setSchoolId(schoolId);
+		schoolEntity.setSource("Goverment");
 		schoolEntity.setAddress(address);
+		schoolEntity.setDistrict(district);
 		schoolEntity.setTel(phone);
 		schoolEntity.setSchoolEmail(email);
 		schoolEntity.setFax(fax);
 		schoolEntity.setSchoolWebsite(website);
+		schoolEntity.setNumberOfClassroom(numberOfClassroom);
 		
+		schoolEntity.setSupervisorChairmanofManagementCommittee(supervisorChairmanofManagementCommittee);
 		schoolEntity.setNameofSchoolPrincipal(schoolHead);
 		schoolEntity.setHastheIncorporatedmanagementcommitteebeenestablished(hastheIncorporatedManagementCommitteebeenestablished);
 		schoolEntity.setSchoolCategory(schoolType);
@@ -202,7 +234,9 @@ public class PSService {
 		schoolEntity.setSchoolBusService(schoolBusService);
 		schoolEntity.setParentTeacherAssociation(parentTeacherAssociation);
 		schoolEntity.setSchoolAlumniAssociation(schoolAlumniAssociation);
-
+		schoolEntity.setFacilitySupportforStudentswithSpecialEducationalNeeds(facilitySupportforStudentswithSpecialEducationalNeeds);
+		schoolEntity.setTime(time);
+		
 		schoolEntity.setSchoolFee(schoolFee);
 		schoolEntity.setTongfai(tongFai);
 		schoolEntity.setSchoolFee(PTAFee);
@@ -224,8 +258,43 @@ public class PSService {
 		schoolEntity.setWorkExperience0_4Years(workExperience0_4years);
 		schoolEntity.setWorkExperience5_9Years(workExperience5_9years);
 		schoolEntity.setWorkExperience10YearsoOrAbove(workExperience10yearsorabove);
+		
+		schoolEntity.setSchoolManagementOrganisation(SchoolManagementOrganisation);
+		schoolEntity.setIncorporatedManagementCommittee_SchoolManagementCommittee_ManagementCommittee(IncorporatedManagementCommittee_SchoolManagementCommittee_ManagementCommittee);
+		schoolEntity.setSchoolGreenPolicy(SchoolGreenPolicy);
+		schoolEntity.setSchoolsMajorConcerns(SchoolsMajorConcerns);
+		schoolEntity.setLearningAndTeachingStrategies(LearningAndTeachingStrategies);
+		schoolEntity.setDevelopmentofKeyTasks(DevelopmentofKeyTasks);
+		schoolEntity.setDevelopmentofGenericSkills(DevelopmentofGenericSkills);
+		schoolEntity.setWholeSchoolApproachtoCaterforStudentDiversity(WholeSchoolApproachtoCaterforStudentDiversity);
+		schoolEntity.setCurriculumTailoringandAdaptation(CurriculumTailoringandAdaptation);
+		schoolEntity.setHome_SchoolCo_operation(Home_SchoolCooperation);
+		schoolEntity.setSchoolEthos(SchoolEthos);
+		schoolEntity.setSchoolDevelopmentPlan(SchoolDevelopmentPlan);
+		schoolEntity.setTeacherProfessionalTrainingAndDevelopment(TeacherProfessionalTrainingAndDevelopment);
+		schoolEntity.setFeeRemissionScheme(FeeRemissionScheme);
+		schoolEntity.setOthers(Others);
+		schoolEntity.setNumberofSchoolDaysperweek(NumberofSchoolDaysperweek);
+		schoolEntity.setNumberofperiodsperday(Numberofperiodsperday);
+		schoolEntity.setDurationofeachnormalperiod(Durationofeachnormalperiod);
+		schoolEntity.setSchoolstartsat(Schoolstartsat);
+		schoolEntity.setSchoolendsat(Schoolendsat);
+		schoolEntity.setLunchtime(Lunchtime);
+		schoolEntity.setLuncharrangement(Luncharrangement);
+		schoolEntity.setHealthyschoollife(Healthyschoollife);
+		schoolEntity.setRemarks(Remarks);
+		schoolEntity.setNumberOfTestPerYear(NumberofTestperyear); 
+		schoolEntity.setNumberOfExamPerYear(NumberofExamperyear); 
+		schoolEntity.setStreamingArrangement(Streamingarrangement);   
+		schoolEntity.setDiversifiedAssessmentForLearning(DiversifiedAssessmentforLearning);
+		
+		Map<String, String> result = AddressLocater.locate(address);
+		schoolEntity.setLattitude(result.get("lat"));
+		schoolEntity.setLongitude(result.get("long"));
 
 		return schoolEntity;
 	}
 
 }
+	
+
