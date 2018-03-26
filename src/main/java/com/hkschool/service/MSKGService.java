@@ -50,13 +50,10 @@ public class MSKGService {
 				Element link = links.get(0);
 				String schoolId = link.attr("href").replace("http://www.myschool.hk/school.php?sid=", "");
 				String schoolName = link.text();
-				List<KGEntity> list = schoolJpaRepository.findBySchoolName(schoolName);
-				if(list.size() > 0){
+				KGEntity schoolEntity = schoolJpaRepository.findBySchoolName(schoolName);
+				if(schoolEntity != null){
 					try {
-						for(KGEntity schoolEntity : list) {
 							pull(schoolId, schoolEntity);
-						//schoolJpaRepository.save(pull(schoolName, schoolId));
-						}
 							System.out.println("Found " + schoolName + " " + cnt1++);
 							
 					} catch (Exception e) {

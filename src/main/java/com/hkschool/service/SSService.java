@@ -65,34 +65,33 @@ public class SSService {
 		Pattern pattern = Pattern.compile("sch_detail.php\\?.*sch_id=([0-9]+)");
 
 		for (int index = 2; index < schools.size(); index++) {
-			Element school = schools.get(index);
-			Element link = school.getElementsByTag("a").get(0);
+			try{
+				Element school = schools.get(index);
+				Element link = school.getElementsByTag("a").get(0);
 
-			String url = link.attr("href");
-			Matcher matcher = pattern.matcher(url);
-			if (url != null && matcher.find()) {
-				String schoolName = link.text().replaceAll("[A-Za-z '\\-_]+", "");
-				String schoolId = matcher.group(1);
-				 //pull(schoolName, schoolId);
-				if (pSchoolJpaRepository.findBySchoolId(schoolId) == null) {
-					try {
-						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
-					} catch (Exception e) {
-						System.out.println("Failed to add " + schoolName + " " + cnt);
-						System.out.println("Error : " + e.getMessage());
+				String url = link.attr("href");
+				Matcher matcher = pattern.matcher(url);
+				if (url != null && matcher.find()) {
+					String schoolName = link.text().replaceAll("[A-Za-z '\\-_\\.\\(\\)&]+", "");
+					String schoolId = matcher.group(1);
+					if (pSchoolJpaRepository.findBySchoolName(schoolName) == null) {
+						try {
+							pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
+							System.out.println("Added " + schoolName + " " + cnt);
+						} catch (Exception e) {
+							System.out.println("Failed to add " + schoolName + " " + cnt);
+						}
+					} else {
+						System.out.println("Already exists " + schoolName + " " + cnt);
 					}
-					System.out.println("Added " + schoolName + " " + cnt);
-				} else {
-					System.out.println("Already exists " + schoolName + " " + cnt);
+					cnt++;
 				}
-				cnt++;
-			}
+			} catch(Exception e) { }
 		}
 
 	}
 
-	private SSEntity pull(String district, String schoolName, String schoolId)
-			throws IOException {
+	private SSEntity pull(String district, String schoolName, String schoolId) throws IOException {
 		Document doc = Jsoup.connect("http://www.chsc.hk/ssp2017/sch_detail.php?lang_id=2&sch_id="+ schoolId).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
@@ -109,22 +108,22 @@ public class SSService {
 		tds = mainTable.getElementsByTag("td");
 
 		String SchoolsKeyConcerns = tds.get(2).text();
-		String SchoolManagementOrganisation = tds.get(8).text();
-		String IncorporatedManagementCommittee_SchoolManagement = tds.get(11).text();
-		String SchoolGreenPolicy = tds.get(14).text();
-		String Whole_schoolLanguagePolicy = tds.get(20).text();
+		//String SchoolManagementOrganisation = tds.get(8).text();
+		//String IncorporatedManagementCommittee_SchoolManagement = tds.get(11).text();
+		//String SchoolGreenPolicy = tds.get(14).text();
+		//String Whole_schoolLanguagePolicy = tds.get(20).text();
 		//String LearningAndTeachingStrategies = tds.get(23).text();
-		String School_basedcurriculum = tds.get(26).text();
-		String CareerandLifePlanning = tds.get(29).text();
-		String KeyLearningAreas = tds.get(32).text();
-		String WholeSchoolApproachtoCaterforStudentDiversity = tds.get(38).text();
-		String LearningandAssessment = tds.get(41).text();
-		String SchoolFeeRemission = tds.get(44).text();
-		String Home_SchoolCo_operation = tds.get(50).text();
-		String SchoolEthos = tds.get(53).text();
-		String SchoolDevelopmentPlan = tds.get(59).text();
-		String TeacherProfessionalTrainingAndDevelopment = tds.get(62).text();
-		String Extra_curricular_Co_curricularActivities = tds.get(65).text();
+		//String School_basedcurriculum = tds.get(26).text();
+		//String CareerandLifePlanning = tds.get(29).text();
+		//String KeyLearningAreas = tds.get(32).text();
+		//String WholeSchoolApproachtoCaterforStudentDiversity = tds.get(38).text();
+		//String LearningandAssessment = tds.get(41).text();
+		//String SchoolFeeRemission = tds.get(44).text();
+		//String Home_SchoolCo_operation = tds.get(50).text();
+		//String SchoolEthos = tds.get(53).text();
+		//String SchoolDevelopmentPlan = tds.get(59).text();
+		//String TeacherProfessionalTrainingAndDevelopment = tds.get(62).text();
+		//String Extra_curricular_Co_curricularActivities = tds.get(65).text();
 		String Others = tds.get(68).text();
 		String DirectpublictransportationtoSchool = tds.get(71).text();
 		String Remarks = tds.get(74).text();
@@ -150,32 +149,32 @@ public class SSService {
 		String SubjectsOfferedin2017_2018SchoolYear = tds.get(2).text();
 		//String Chineseasthemediumofinstruction = tds.get(5).text();
 		//String Englishasthemediumofinstruction = tds.get(8).text();
-		String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup = tds.get(11).text();
-		String SubjectsOfferedin2017_2018SchoolYear0 = tds.get(14).text();
+		//String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup = tds.get(11).text();
+		//String SubjectsOfferedin2017_2018SchoolYear0 = tds.get(14).text();
 		//String Chineseasthemediumofinstruction0 = tds.get(17).text();
 		//String Englishasthemediumofinstruction0 = tds.get(20).text();
-		String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup0 = tds.get(23).text();
-		String SubjectstobeOfferedin2018_2019SchoolYear = tds.get(26).text();
+		//String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup0 = tds.get(23).text();
+		//String SubjectstobeOfferedin2018_2019SchoolYear = tds.get(26).text();
 		//String Chineseasthemediumofinstruction1 = tds.get(29).text();
 		//String Englishasthemediumofinstruction1 = tds.get(32).text();
-		String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup1 = tds.get(35).text();
-		String SubjectstobeOferedin2018_2019SchoolYear1 = tds.get(38).text();
+		//String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup1 = tds.get(35).text();
+		//String SubjectstobeOferedin2018_2019SchoolYear1 = tds.get(38).text();
 		//String Chineseasthemediumofinstruction2 = tds.get(41).text();
-		String Englishasthemediumofinstruction2 = tds.get(44).text();
-		String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup2 = tds.get(47).text();
+		//String Englishasthemediumofinstruction2 = tds.get(44).text();
+		//String UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup2 = tds.get(47).text();
 
 		mainTable = totalTables.get(7); // Secondary One Admission, Orientation
 										// Activities & Healthy School Life
 		tds = mainTable.getElementsByTag("td");
 
-		String SecondaryOneAdmission = tds.get(2).text();
-		String OrientationActivitiesandHealthyLife = tds.get(5).text();
+		//String SecondaryOneAdmission = tds.get(2).text();
+		//String OrientationActivitiesandHealthyLife = tds.get(5).text();
 
 		mainTable = totalTables.get(3); // SchoolFacilities
 		tds = mainTable.getElementsByTag("td");
 
 		String SchoolFacilities = tds.get(2).text();
-		String FacilityforSupportingStudentswithSpecialEducationalNeeds = tds.get(5).text();
+		//String FacilityforSupportingStudentswithSpecialEducationalNeeds = tds.get(5).text();
 
 		mainTable = totalTables.get(1); // School Info
 		tds = mainTable.getElementsByTag("td");
@@ -238,54 +237,51 @@ public class SSService {
 		schoolEntity.setTongFaiS5(TongFaiS5);
 		schoolEntity.setSchoolFeeS6(SchoolFeeS6);
 		schoolEntity.setTongFaiS6(TongFaiS6);
-		schoolEntity
-				.setParent_TeacherAssociationFee(Parent_TeacherAssociationFee);
+		schoolEntity.setParent_TeacherAssociationFee(Parent_TeacherAssociationFee);
 		schoolEntity.setIncidentals(Incidentals);
-		schoolEntity
-				.setStudentsAssociationMembershipFee(StudentsAssociationMembershipFee);
+		schoolEntity.setStudentsAssociationMembershipFee(StudentsAssociationMembershipFee);
 		schoolEntity.setChargesforSpecificPurposes(ChargesforSpecificPurposes);
 		schoolEntity.setOtherCharges(OtherCharges);
 		schoolEntity.setWorkingExperiences(WorkingExperiences);
 		schoolEntity.setWorkingExperiences0_4years(WorkingExperiences0_4years);
 		schoolEntity.setWorkingExperiences5_9years(WorkingExperiences5_9years);
-		schoolEntity
-				.setWorkingExperiences10yearsorabove(WorkingExperiences10yearsorabove);
+		schoolEntity.setWorkingExperiences10yearsorabove(WorkingExperiences10yearsorabove);
 
 		schoolEntity.setSchoolsKeyConcerns(SchoolsKeyConcerns);
-		schoolEntity
-				.setSchoolManagementOrganisation(SchoolManagementOrganisation);
-		schoolEntity
-				.setIncorporatedManagementCommittee_SchoolManagement(IncorporatedManagementCommittee_SchoolManagement);
+		/*schoolEntity.setSchoolManagementOrganisation(SchoolManagementOrganisation);
+		schoolEntity.setIncorporatedManagementCommittee_SchoolManagement(IncorporatedManagementCommittee_SchoolManagement);
 		schoolEntity.setSchoolGreenPolicy(SchoolGreenPolicy);
 		schoolEntity.setWhole_schoolLanguagePolicy(Whole_schoolLanguagePolicy);
 		//schoolEntity.setLearningAndTeachingStrategies(LearningAndTeachingStrategies);
 		schoolEntity.setSchool_basedcurriculum(School_basedcurriculum);
 		schoolEntity.setCareerandLifePlanning(CareerandLifePlanning);
 		schoolEntity.setKeyLearningAreas(KeyLearningAreas);
-		schoolEntity
-				.setWholeSchoolApproachtoCaterforStudentDiversity(WholeSchoolApproachtoCaterforStudentDiversity);
+		schoolEntity.setWholeSchoolApproachtoCaterforStudentDiversity(WholeSchoolApproachtoCaterforStudentDiversity);
 		schoolEntity.setLearningandAssessment(LearningandAssessment);
 		schoolEntity.setSchoolFeeRemission(SchoolFeeRemission);
 		schoolEntity.setHome_SchoolCo_operation(Home_SchoolCo_operation);
 		schoolEntity.setSchoolEthos(SchoolEthos);
 		schoolEntity.setSchoolDevelopmentPlan(SchoolDevelopmentPlan);
-		schoolEntity
-				.setTeacherProfessionalTrainingAndDevelopment(TeacherProfessionalTrainingAndDevelopment);
-		schoolEntity
-				.setExtra_curricular_Co_curricularActivities(Extra_curricular_Co_curricularActivities);
+		schoolEntity.setTeacherProfessionalTrainingAndDevelopment(TeacherProfessionalTrainingAndDevelopment);
+		schoolEntity.setExtra_curricular_Co_curricularActivities(Extra_curricular_Co_curricularActivities);*/
 		schoolEntity.setOthers(Others);
-		schoolEntity
-				.setDirectpublictransportationtoSchool(DirectpublictransportationtoSchool);
+		schoolEntity.setDirectpublictransportationtoSchool(DirectpublictransportationtoSchool);
 		schoolEntity.setRemarks(Remarks);
 
-		schoolEntity
-				.setSubjectsOfferedin2017_2018SchoolYear(SubjectsOfferedin2017_2018SchoolYear);
+		schoolEntity.setSubjectsOfferedin2017_2018SchoolYear(SubjectsOfferedin2017_2018SchoolYear);
 		//schoolEntity.setChineseasthemediumofinstruction(Chineseasthemediumofinstruction);
 		//schoolEntity.setEnglishasthemediumofinstruction(Englishasthemediumofinstruction);
-		schoolEntity.setUsebygroup(UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup);
-		schoolEntity.setSubjectsOfferedin2017_2018SchoolYear(SubjectsOfferedin2017_2018SchoolYear0);
 		//schoolEntity.setChineseasthemediumofinstruction0(Chineseasthemediumofinstruction0);
 		//schoolEntity.setEnglishasthemediumofinstruction0(Englishasthemediumofinstruction0);
+
+		schoolEntity.setSchoolFacilities(SchoolFacilities);
+
+		schoolEntity
+				.setNumberofteachingpostsintheapprovedestablishment(Numberofteachingpostsintheapprovedestablishment);
+		schoolEntity
+				.setTotalnumberofteachersintheschool(Totalnumberofteachersintheschool);
+/*		schoolEntity.setUsebygroup(UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup);
+		schoolEntity.setSubjectsOfferedin2017_2018SchoolYear(SubjectsOfferedin2017_2018SchoolYear0);
 		schoolEntity.setUsebygroup0(UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup0);
 		schoolEntity.setSubjectstobeOfferedin2018_2019SchoolYear1(SubjectstobeOfferedin2018_2019SchoolYear);
 		//schoolEntity.setChineseasthemediumofinstruction1(Chineseasthemediumofinstruction1);
@@ -295,26 +291,14 @@ public class SSService {
 		//schoolEntity.setChineseasthemediumofinstruction2(Chineseasthemediumofinstruction2);
 		schoolEntity.setEnglishasthemediumofinstruction2(Englishasthemediumofinstruction2);
 		schoolEntity.setUsebygroup2(UseeitherChineseorEnglishasthemediumofinstructionbyclassorbygroup2);
-
+		
 		schoolEntity.setSecondaryOneAdmission(SecondaryOneAdmission);
-		schoolEntity
-				.setOrientationActivitiesandHealthyLife(OrientationActivitiesandHealthyLife);
-
-		schoolEntity.setSchoolFacilities(SchoolFacilities);
-		schoolEntity
-				.setFacilityforSupportingStudentswithSpecialEducationalNeeds(FacilityforSupportingStudentswithSpecialEducationalNeeds);
-
-		schoolEntity
-				.setNumberofteachingpostsintheapprovedestablishment(Numberofteachingpostsintheapprovedestablishment);
-		schoolEntity
-				.setTotalnumberofteachersintheschool(Totalnumberofteachersintheschool);
-		schoolEntity
-				.setQualificationsandProfessionalTraining(QualificationsandProfessionalTraining);
-		schoolEntity
-				.setTeacherCertificate_DiplomainEducation(TeacherCertificate_DiplomainEducation);
+		schoolEntity.setOrientationActivitiesandHealthyLife(OrientationActivitiesandHealthyLife);
+		schoolEntity.setFacilityforSupportingStudentswithSpecialEducationalNeeds(FacilityforSupportingStudentswithSpecialEducationalNeeds);*/
+		schoolEntity.setQualificationsandProfessionalTraining(QualificationsandProfessionalTraining);
+		schoolEntity.setTeacherCertificate_DiplomainEducation(TeacherCertificate_DiplomainEducation);
 		schoolEntity.setBachelorDegree(BachelorDegree);
-		schoolEntity
-				.setMaster_DoctorateDegreeorabove(Master_DoctorateDegreeorabove);
+		schoolEntity.setMaster_DoctorateDegreeorabove(Master_DoctorateDegreeorabove);
 		schoolEntity.setSpecialEducationTraining(SpecialEducationTraining);
 
 		schoolEntity.setOtherDistrict(OtherDistrict);

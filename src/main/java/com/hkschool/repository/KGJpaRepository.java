@@ -1,7 +1,7 @@
 package com.hkschool.repository;
-import java.util.List;
-
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.hkschool.models.KGEntity;
 
@@ -9,6 +9,10 @@ public interface KGJpaRepository extends PagingAndSortingRepository<KGEntity, Lo
 
 	KGEntity findBySchoolId(String schoolId);
 
-	List<KGEntity> findBySchoolName(String schoolName);
+	@Query(value = "select * from kindergarten_school s where s.school_name = :schoolName limit 1", nativeQuery = true)
+	KGEntity findBySchoolName(@Param(value = "schoolName") String schoolName);
+
+	@Query(value = "select * from kindergarten_school s where s.tel like :tel limit 1", nativeQuery = true)
+	KGEntity findByTel(@Param(value = "tel") String tel);
 
 }

@@ -71,17 +71,17 @@ public void pull() throws IOException {
 			String url = link.attr("href");
 			Matcher matcher = pattern.matcher(url);
 			if (url != null && matcher.find()) {
-				String schoolName = link.text().replaceAll("[A-Za-z '\\-_]+", "");
+				String schoolName = link.text().replaceAll("[A-Za-z '\\-_\\.\\(\\)&]+", "");
 				String schoolId = matcher.group(1);
-				//pull(schoolName, schoolId);
-				if(pSchoolJpaRepository.findBySchoolId(schoolId) == null){
+				if(pSchoolJpaRepository.findBySchoolName(schoolName) == null){
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
+						System.out.println("Added " + schoolName + " " + cnt);
 					} catch (Exception e) {
 						System.out.println("Failed to add " + schoolName + " " + cnt);
 						System.out.println("Error : " + e.getMessage());
+						//e.printStackTrace();
 					}
-					System.out.println("Added " + schoolName + " " + cnt);
 				} else {
 					System.out.println("Already exists " + schoolName + " " + cnt);
 				}

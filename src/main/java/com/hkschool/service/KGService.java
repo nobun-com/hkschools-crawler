@@ -71,7 +71,7 @@ public class KGService {
 			if (onClick != null && matcher.find()) {
 				String schoolName = school.text();
 				String schoolId = matcher.group();
-				KGEntity kgEntity = schoolJpaRepository.findBySchoolId(schoolId);
+				KGEntity kgEntity = schoolJpaRepository.findBySchoolName(schoolName);
 				if (kgEntity == null) {
 					try {
 						schoolJpaRepository.save(pull(displayTextDistrict, schoolName, schoolId));

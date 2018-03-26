@@ -36,7 +36,6 @@ public class HkSchoolApplication {
 	@Autowired
 	MSKGService mSKGService;
 
-
 	@Autowired
 	public HkSchoolApplication(KGService schoolService1, PSService schoolService2, SSService schoolService3 , HKSKGService schoolservice4 , HKSPSService schoolservice6, HKSSSService schoolservice7, MSKGService schoolservice5 ) {
 		this.kGService = schoolService1;
@@ -54,6 +53,7 @@ public class HkSchoolApplication {
 	private void loadDataFromMyschoolhkSites() {
 		//mSKGService.pull();
 	}
+
 	private void loadDataFromGovermentSites() {
 		try {
 			kGService.pull();

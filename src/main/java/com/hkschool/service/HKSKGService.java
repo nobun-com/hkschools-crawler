@@ -2,6 +2,8 @@ package com.hkschool.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -24,18 +26,19 @@ public class HKSKGService {
 
 	@Resource
 	private KGJpaRepository schoolJpaRepository;
-	
+
 	@Resource
 	ImageDownloader imageDownloader;
-	
+
 	@Value(value = "${images.path}")
 	String imagePath = "";
-	
+
 	@Value(value = "${images.pathTop}")
 	String imagePathTop = "";
-	
+
 	public void pull() throws Exception {
-		JsonNode jsonResponse = Unirest.get("https://www.schooland.hk/ajax/kgdt_processing.php?draw=1").asJson().getBody();
+		JsonNode jsonResponse = Unirest.get("https://www.schooland.hk/ajax/kgdt_processing.php?draw=1").asJson()
+				.getBody();
 		JSONArray records = (JSONArray) jsonResponse.getObject().get("data");
 
 		int cnt1 = 0;
@@ -44,18 +47,15 @@ public class HKSKGService {
 			JSONArray elements = (JSONArray) records.get(index);
 			String element = (String) elements.get(0);
 			String[] tokens = element.replace('"', '@').split("@");
-			
+
 			if (tokens[1] != null) {
 				String schoolName = element.split("<|>")[2];
 				String schoolId = tokens[1];
-				List<KGEntity> list = schoolJpaRepository.findBySchoolName(schoolName);
-				if (list.size() > 0) {
+				KGEntity kGEntity = pull(schoolId, schoolName);
+				if (kGEntity != null) {
 					try {
-						for(KGEntity kGEntity : list) {
-							schoolJpaRepository.save(pull(schoolId, kGEntity));
-							System.out.println("updated : " + schoolName + " " + cnt1++);
-						}
-						
+						schoolJpaRepository.save(kGEntity);
+						System.out.println("updated : " + schoolName + " " + cnt1++);
 					} catch (Exception e) {
 						System.out.println("Error : " + e.getMessage());
 					}
@@ -66,69 +66,87 @@ public class HKSKGService {
 		}
 	}
 
-	private KGEntity pull(String schoolId, KGEntity kGEntity) throws IOException {
+	private KGEntity pull(String schoolId, String schoolName) throws IOException {
+		
+		KGEntity kGEntity = schoolJpaRepository.findBySchoolName(schoolName);
+		
+		try {
+			
+			Document doc = Jsoup.connect("https://www.schooland.hk/kg/" + schoolId).get();
+			
+			if(kGEntity == null) {
+				String regex = "[0-9]{8}";
+				Pattern p = Pattern.compile(regex);
+				String contact = doc.getElementsByClass("contact").get(0).text();
+				Matcher m = p.matcher(contact);
+				
+				if(m.find()) {
+					String tel = m.group(0);
+					tel = "%" + tel.substring(0, 4) + " " + tel.substring(4) + "%";
+					kGEntity = schoolJpaRepository.findByTel(tel);
+				}
+			}
+			
+			if(kGEntity == null) {
+				return null;
+			}
+			
+			Elements rows = doc.getElementsByClass("row");
 
-		Document doc = Jsoup.connect("https://www.schooland.hk/kg/" + schoolId).get();
-		Elements rows = doc.getElementsByClass("row");
-		
-		
-		
-		Element row = rows.get(0);
-		String description = row.getElementsByTag("p").get(0).text();
-		
-		String imageUrl = kGEntity.getImage();
-		
-		if(imageUrl == null || imageUrl.isEmpty())
-		{
-		row = rows.get(5);//school images
-		row = doc.getElementsByClass("contact-pic").get(0);
-		Element link = row.getElementsByTag("img").get(0);
-		
-		imageUrl = "https://www.schooland.hk" + link.attr("src");
-		String imageBottomS3url = imageDownloader.saveImage(imageUrl, "kg");
-		kGEntity.setImage(imageBottomS3url);
+			Element row = rows.get(0);
+			String description = row.getElementsByTag("p").get(0).text();
+
+			row = rows.get(1);// schoolCategoury
+			// String schoolCategoury = row.getElementsByTag("p").get(0).text();
+			String schoolCategouryTitle = row.getElementsByTag("p").get(0).text();
+
+			row = rows.get(2);// schoolFacilities
+			String schoolFacilities = row.getElementsByTag("p").get(0).text();
+			String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
+
+			row = rows.get(3);// schoolHistory
+			String schoolHistory = row.getElementsByTag("p").get(0).text();
+			String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
+
+			row = rows.get(5);// School situation
+			String teachingSituation = row.getElementsByTag("p").get(0).text();
+			String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
+
+			// kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
+			kGEntity.setSchoolFacilitiesTitle(schoolFacilitiesTitle);
+			kGEntity.setSchoolHistoryTitle(schoolHistoryTitle);
+			kGEntity.setTeachingSituationTitle(teachingSituationTitle);
+			kGEntity.setSchoolDiscription(description);
+			// kGEntity.setSchoolCategory(schoolCategoury);
+			kGEntity.setSchoolHistory(schoolHistory);
+			kGEntity.setSchoolFacilities(schoolFacilities);
+			kGEntity.setTeachingSituation(teachingSituation);
+			String imageUrl = kGEntity.getImage();
+
+			if (imageUrl == null || imageUrl.isEmpty()) {
+				row = rows.get(5);// school images
+				row = doc.getElementsByClass("contact-pic").get(0);
+				Element link = row.getElementsByTag("img").get(0);
+
+				imageUrl = "https://www.schooland.hk" + link.attr("src");
+				String imageBottomS3url = imageDownloader.saveImage(imageUrl, "kg");
+				kGEntity.setImage(imageBottomS3url);
+			}
+
+			String imageUrlTop = kGEntity.getImageTop();
+
+			if (imageUrlTop == null || imageUrlTop.isEmpty()) {
+				row = rows.get(1);// school imagesTop
+				row = doc.getElementsByClass("photo-box").get(0);
+				Element link1 = row.getElementsByTag("img").get(0);
+
+				imageUrlTop = "https://www.schooland.hk" + link1.attr("src");
+				String imageTopS3url = imageDownloader.saveImage(imageUrlTop, "kg");
+				kGEntity.setImageTop(imageTopS3url);
+			}
+
+		} catch (Exception e) {
 		}
-		
-		String imageUrlTop = kGEntity.getImageTop();
-		
-		if(imageUrlTop == null || imageUrlTop.isEmpty())
-		{
-		row = rows.get(1);//school imagesTop
-		row = doc.getElementsByClass("photo-box").get(0);
-		Element link1 = row.getElementsByTag("img").get(0);
-		
-		imageUrlTop = "https://www.schooland.hk" + link1.attr("src");
-		String imageTopS3url = imageDownloader.saveImage(imageUrlTop, "kg");
-		kGEntity.setImageTop(imageTopS3url);
-		}
-		
-		row = rows.get(1);//schoolCategoury
-		//String schoolCategoury = row.getElementsByTag("p").get(0).text();
-		String schoolCategouryTitle = row.getElementsByTag("p").get(0).text();
-		
-		row = rows.get(2);//schoolFacilities
-		String schoolFacilities = row.getElementsByTag("p").get(0).text();
-		String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
-		
-		row = rows.get(3);//schoolHistory
-		String schoolHistory = row.getElementsByTag("p").get(0).text();
-		String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
-		
-		row = rows.get(5);//School situation
-		String teachingSituation = row.getElementsByTag("p").get(0).text();
-		String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
-		
-		
-		
-		//kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
-		kGEntity.setSchoolFacilitiesTitle(schoolFacilitiesTitle);
-		kGEntity.setSchoolHistoryTitle(schoolHistoryTitle);
-		kGEntity.setTeachingSituationTitle(teachingSituationTitle);
-		kGEntity.setSchoolDiscription(description);
-		//kGEntity.setSchoolCategory(schoolCategoury);
-		kGEntity.setSchoolHistory(schoolHistory);
-		kGEntity.setSchoolFacilities(schoolFacilities);
-		kGEntity.setTeachingSituation(teachingSituation);
 		return kGEntity;
 
 	}
