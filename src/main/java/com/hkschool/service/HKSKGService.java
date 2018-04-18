@@ -30,11 +30,11 @@ public class HKSKGService {
 	@Resource
 	ImageDownloader imageDownloader;
 
-	@Value(value = "${images.path}")
-	String imagePath = "";
+	//@Value(value = "${images.path}")
+	//String imagePath = "";
 
-	@Value(value = "${images.pathTop}")
-	String imagePathTop = "";
+	//@Value(value = "${images.pathTop}")
+	//String imagePathTop = "";
 
 	public void pull() throws Exception {
 		JsonNode jsonResponse = Unirest.get("https://www.schooland.hk/ajax/kgdt_processing.php?draw=1").asJson()
