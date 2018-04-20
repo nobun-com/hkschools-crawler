@@ -815,10 +815,10 @@ public class KGEntity {
 		this.nurseryAMSessionfees = nurseryAMSessionfees;
 	}
 	public String getLowerKGWDSessionfees() {
-		return lowerKGAMSessionfees;
+		return lowerKGWDSessionfees;
 	}
 	public void setLowerKGWDSessionfees(String lowerKGWDSessionfees) {
-		this.lowerKGAMSessionfees = lowerKGWDSessionfees;
+		this.lowerKGWDSessionfees = lowerKGWDSessionfees;
 	}
 	public String getUpperKGAMSessionfees() {
 		return upperKGAMSessionfees;
