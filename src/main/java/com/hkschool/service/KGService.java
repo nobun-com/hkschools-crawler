@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.hkschool.models.KGEntity;
 import com.hkschool.repository.KGJpaRepository;
-import com.hkschool.util.AddressLocater;
 
 @Component
 public class KGService {
@@ -353,10 +352,6 @@ public class KGService {
 		schoolEntity.setRegistrationFeeHalf_Daysession(registrationsHalfApplicationfee);
 		schoolEntity.setRegistrationFeeWhole_Daysession(registrationfeeWholeApplicationfee);
 
-		Map<String, String> result = AddressLocater.locate(address);
-		schoolEntity.setLattitude(result.get("lat"));
-		schoolEntity.setLongitude(result.get("long"));
-		
 		return schoolEntity;
 	}
 

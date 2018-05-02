@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.hkschool.models.SSEntity;
 import com.hkschool.repository.SSJpaRepository;
-import com.hkschool.util.AddressLocater;
 
 @Component
 public class SSService {
@@ -315,10 +314,6 @@ public class SSService {
 		schoolEntity.setParent_TeacherAssociation(Parent_TeacherAssociation);
 		schoolEntity.setStudentUnion_Association(StudentUnion_Association);
 		schoolEntity.setPastStudentsAssociation_SchoolAlumniAssociation(PastStudentsAssociation_SchoolAlumniAssociation);
-
-		Map<String, String> result = AddressLocater.locate(address);
-		schoolEntity.setLattitude(result.get("lat"));
-		schoolEntity.setLongitude(result.get("long"));
 
 		return schoolEntity;
 	}

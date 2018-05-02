@@ -8,6 +8,7 @@ import com.hkschool.service.HKSKGService;
 import com.hkschool.service.HKSPSService;
 import com.hkschool.service.HKSSSService;
 import com.hkschool.service.KGService;
+import com.hkschool.service.LocationService;
 import com.hkschool.service.MSKGService;
 import com.hkschool.service.PSService;
 import com.hkschool.service.SSService;
@@ -37,7 +38,7 @@ public class HkSchoolApplication {
 	MSKGService mSKGService;
 
 	@Autowired
-	public HkSchoolApplication(KGService schoolService1, PSService schoolService2, SSService schoolService3 , HKSKGService schoolservice4 , HKSPSService schoolservice6, HKSSSService schoolservice7, MSKGService schoolservice5 ) {
+	public HkSchoolApplication(KGService schoolService1, PSService schoolService2, SSService schoolService3 , HKSKGService schoolservice4 , HKSPSService schoolservice6, HKSSSService schoolservice7, MSKGService schoolservice5, LocationService locationService) {
 		this.kGService = schoolService1;
 		this.pSService = schoolService2;
 		this.sSService = schoolService3;
@@ -48,6 +49,7 @@ public class HkSchoolApplication {
 		loadDataFromGovermentSites();
 		loadDataFromSchoolandSites();
 		loadDataFromMyschoolhkSites();
+		locationService.synk();
 	}
 
 	private void loadDataFromMyschoolhkSites() {
