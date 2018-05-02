@@ -68,7 +68,7 @@ public class KGService {
 			String onClick = school.attr("onclick");
 			Matcher matcher = pattern.matcher(onClick);
 			if (onClick != null && matcher.find()) {
-				String schoolName = school.text();
+				String schoolName = school.text().replaceAll("[0-9A-Za-z '\\-_\\.\\(\\)&õ]+", "");
 				String schoolId = matcher.group();
 				KGEntity kgEntity = schoolJpaRepository.findBySchoolName(schoolName);
 				if (kgEntity == null) {
