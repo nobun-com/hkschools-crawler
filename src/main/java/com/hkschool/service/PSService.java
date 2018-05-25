@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.hkschool.models.PSEntity;
 import com.hkschool.repository.PSJpaRepository;
-import com.hkschool.util.AddressLocater;
 
 @Component
 public class PSService {
@@ -71,7 +70,7 @@ public void pull() throws IOException {
 			String url = link.attr("href");
 			Matcher matcher = pattern.matcher(url);
 			if (url != null && matcher.find()) {
-				String schoolName = link.text().replaceAll("[A-Za-z '\\-_\\.\\(\\)&]+", "");
+				String schoolName = link.text().replaceAll("[0-9A-Za-z '\\-_\\.\\(\\)&õ]+", "");
 				String schoolId = matcher.group(1);
 				if(pSchoolJpaRepository.findBySchoolName(schoolName) == null){
 					try {
@@ -288,10 +287,6 @@ public void pull() throws IOException {
 		schoolEntity.setStreamingArrangement(Streamingarrangement);   
 		schoolEntity.setDiversifiedAssessmentForLearning(DiversifiedAssessmentforLearning);
 		
-		Map<String, String> result = AddressLocater.locate(address);
-		schoolEntity.setLattitude(result.get("lat"));
-		schoolEntity.setLongitude(result.get("long"));
-
 		return schoolEntity;
 	}
 

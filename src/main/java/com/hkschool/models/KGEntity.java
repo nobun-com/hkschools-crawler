@@ -41,6 +41,14 @@ public class KGEntity {
 	@Lob
 	String teachingSituation;
 	
+	@Column(name="schoolFees")
+	@Lob
+	String schoolFees;
+
+	@Column(name="schoolFeesTitle")
+	@Lob
+	String schoolFeesTitle;
+
 	@Column(name="time")
 	@Lob
 	String time;
@@ -951,6 +959,18 @@ public class KGEntity {
 	}
 	public void setImageTop(String imageTop) {
 		this.imageTop = imageTop;
+	}
+	public String getSchoolFees() {
+		return schoolFees;
+	}
+	public void setSchoolFees(String schoolFees) {
+		this.schoolFees = schoolFees;
+	}
+	public String getSchoolFeesTitle() {
+		return schoolFeesTitle;
+	}
+	public void setSchoolFeesTitle(String schoolFeesTitle) {
+		this.schoolFeesTitle = schoolFeesTitle;
 	}
 	
 }

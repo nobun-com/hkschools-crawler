@@ -1,7 +1,6 @@
 package com.hkschool.service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.KGEntity;
@@ -93,56 +91,80 @@ public class HKSKGService {
 			
 			Elements rows = doc.getElementsByClass("row");
 
-			Element row = rows.get(0);
-			String description = row.getElementsByTag("p").get(0).text();
+			Element row = null;
+			
+			try {
+				row = rows.get(0);
+				String description = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolDiscription(description);
+			} catch(Exception e) { }
 
-			row = rows.get(1);// schoolCategoury
-			// String schoolCategoury = row.getElementsByTag("p").get(0).text();
-			String schoolCategouryTitle = row.getElementsByTag("p").get(0).text();
+			try {
+				row = rows.get(2);// schoolHistory
+				String schoolHistory = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolHistory(schoolHistory);
+				String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setSchoolHistoryTitle(schoolHistoryTitle);
+			} catch(Exception e) { }
 
-			row = rows.get(2);// schoolFacilities
-			String schoolFacilities = row.getElementsByTag("p").get(0).text();
-			String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
+			try {
+				row = rows.get(3);// schoolFacilities
+				String schoolFacilities = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolFacilities(schoolFacilities);
+				String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setSchoolFacilitiesTitle(schoolFacilitiesTitle);
+			} catch(Exception e) { }
 
-			row = rows.get(3);// schoolHistory
-			String schoolHistory = row.getElementsByTag("p").get(0).text();
-			String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
+			try {
+				row = rows.get(4);// School situation
+				String teachingSituation = row.getElementsByTag("p").get(0).text();
+				kGEntity.setTeachingSituation(teachingSituation);
+				String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setTeachingSituationTitle(teachingSituationTitle);
+			} catch(Exception e) { }
 
-			row = rows.get(5);// School situation
-			String teachingSituation = row.getElementsByTag("p").get(0).text();
-			String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
+			try {
+				row = rows.get(5);// School fees
+				String schoolFees = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolFees(schoolFees);
+				String schoolFeesTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setSchoolFeesTitle(schoolFeesTitle);
+			} catch(Exception e) { }
 
-			// kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
-			kGEntity.setSchoolFacilitiesTitle(schoolFacilitiesTitle);
-			kGEntity.setSchoolHistoryTitle(schoolHistoryTitle);
-			kGEntity.setTeachingSituationTitle(teachingSituationTitle);
-			kGEntity.setSchoolDiscription(description);
-			// kGEntity.setSchoolCategory(schoolCategoury);
-			kGEntity.setSchoolHistory(schoolHistory);
-			kGEntity.setSchoolFacilities(schoolFacilities);
-			kGEntity.setTeachingSituation(teachingSituation);
+			try {
+				row = rows.get(1);// schoolCategoury
+				String schoolCategoury = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolCategory(schoolCategoury);
+				String schoolCategouryTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
+			} catch(Exception e) { }
+
 			String imageUrl = kGEntity.getImage();
 
 			if (imageUrl == null || imageUrl.isEmpty()) {
-				row = rows.get(5);// school images
-				row = doc.getElementsByClass("contact-pic").get(0);
-				Element link = row.getElementsByTag("img").get(0);
-
-				imageUrl = "https://www.schooland.hk" + link.attr("src");
-				String imageBottomS3url = imageDownloader.saveImage(imageUrl, "kg");
-				kGEntity.setImage(imageBottomS3url);
+				try {
+					row = rows.get(5);// school images
+					row = doc.getElementsByClass("contact-pic").get(0);
+					Element link = row.getElementsByTag("img").get(0);
+	
+					imageUrl = "https://www.schooland.hk" + link.attr("src");
+					String imageBottomS3url = imageDownloader.saveImage(imageUrl, "kg");
+					kGEntity.setImage(imageBottomS3url);
+				} catch(Exception e) { }
 			}
 
 			String imageUrlTop = kGEntity.getImageTop();
 
 			if (imageUrlTop == null || imageUrlTop.isEmpty()) {
-				row = rows.get(1);// school imagesTop
-				row = doc.getElementsByClass("photo-box").get(0);
-				Element link1 = row.getElementsByTag("img").get(0);
-
-				imageUrlTop = "https://www.schooland.hk" + link1.attr("src");
-				String imageTopS3url = imageDownloader.saveImage(imageUrlTop, "kg");
-				kGEntity.setImageTop(imageTopS3url);
+				try {
+					row = rows.get(1);// school imagesTop
+					row = doc.getElementsByClass("photo-box").get(0);
+					Element link1 = row.getElementsByTag("img").get(0);
+	
+					imageUrlTop = "https://www.schooland.hk" + link1.attr("src");
+					String imageTopS3url = imageDownloader.saveImage(imageUrlTop, "kg");
+					kGEntity.setImageTop(imageTopS3url);
+				} catch(Exception e) { }
 			}
 
 		} catch (Exception e) {
