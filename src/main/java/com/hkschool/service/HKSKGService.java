@@ -93,14 +93,30 @@ public class HKSKGService {
 
 			Element row = null;
 			
+			int cnt = 0;
+			
 			try {
-				row = rows.get(0);
+				row = rows.get(cnt++);
 				String description = row.getElementsByTag("p").get(0).text();
 				kGEntity.setSchoolDiscription(description);
 			} catch(Exception e) { }
 
 			try {
-				row = rows.get(2);// schoolHistory
+				row = rows.get(cnt);// schoolCategoury
+				String schoolCategoury = row.getElementsByTag("p").get(0).text();
+				if(schoolCategoury != null && schoolCategoury.contains("幼稚園質素")) {cnt++;}
+			} catch(Exception e) { }
+
+			try {
+				row = rows.get(cnt++);// schoolCategoury
+				String schoolCategoury = row.getElementsByTag("p").get(0).text();
+				kGEntity.setSchoolCategory(schoolCategoury);
+				String schoolCategouryTitle = row.getElementsByTag("h4").get(0).text();
+				kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
+			} catch(Exception e) { }
+
+			try {
+				row = rows.get(cnt++);// schoolHistory
 				String schoolHistory = row.getElementsByTag("p").get(0).text();
 				kGEntity.setSchoolHistory(schoolHistory);
 				String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
@@ -108,7 +124,7 @@ public class HKSKGService {
 			} catch(Exception e) { }
 
 			try {
-				row = rows.get(3);// schoolFacilities
+				row = rows.get(cnt++);// schoolFacilities
 				String schoolFacilities = row.getElementsByTag("p").get(0).text();
 				kGEntity.setSchoolFacilities(schoolFacilities);
 				String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
@@ -116,7 +132,7 @@ public class HKSKGService {
 			} catch(Exception e) { }
 
 			try {
-				row = rows.get(4);// School situation
+				row = rows.get(cnt++);// School situation
 				String teachingSituation = row.getElementsByTag("p").get(0).text();
 				kGEntity.setTeachingSituation(teachingSituation);
 				String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
@@ -124,19 +140,11 @@ public class HKSKGService {
 			} catch(Exception e) { }
 
 			try {
-				row = rows.get(5);// School fees
+				row = rows.get(cnt++);// School fees
 				String schoolFees = row.getElementsByTag("p").get(0).text();
 				kGEntity.setSchoolFees(schoolFees);
 				String schoolFeesTitle = row.getElementsByTag("h4").get(0).text();
 				kGEntity.setSchoolFeesTitle(schoolFeesTitle);
-			} catch(Exception e) { }
-
-			try {
-				row = rows.get(1);// schoolCategoury
-				String schoolCategoury = row.getElementsByTag("p").get(0).text();
-				kGEntity.setSchoolCategory(schoolCategoury);
-				String schoolCategouryTitle = row.getElementsByTag("h4").get(0).text();
-				kGEntity.setSchoolCategouryTitle(schoolCategouryTitle);
 			} catch(Exception e) { }
 
 			String imageUrl = kGEntity.getImage();
