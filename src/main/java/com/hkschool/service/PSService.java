@@ -22,6 +22,8 @@ public class PSService {
 
 	@Resource
 	private PSJpaRepository pSchoolJpaRepository;
+
+	int cnt = 0;
 	
 public void pull() throws IOException {
 		
@@ -50,6 +52,10 @@ public void pull() throws IOException {
 			} catch (Exception e) {
 			}
 		}
+		System.out.println("**********************************");
+		System.out.println(cnt + " primery schools need to pull again");
+		System.out.println("**********************************");
+
 }
 	
 
@@ -59,8 +65,6 @@ public void pull() throws IOException {
 
 		Element mainTable = totalTables.get(1); // school list
 		Elements schools = mainTable.getElementsByTag("td");
-		int cnt = 0;
-
 		Pattern pattern = Pattern.compile("sch_detail.php\\?.*sch_id=([0-9]+)");
 		
 		for (int index = 2; index < schools.size(); index+=15) {
@@ -75,16 +79,15 @@ public void pull() throws IOException {
 				if(pSchoolJpaRepository.findBySchoolName(schoolName) == null){
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
-						System.out.println("Added " + schoolName + " " + cnt);
+						System.out.println("PS Added " + schoolName);
 					} catch (Exception e) {
-						System.out.println("Failed to add " + schoolName + " " + cnt);
+						cnt++;
+						System.out.println("Failed to add PS " + schoolName + " failed count : " + cnt);
 						System.out.println("Error : " + e.getMessage());
-						//e.printStackTrace();
 					}
 				} else {
-					System.out.println("Already exists " + schoolName + " " + cnt);
+					System.out.println("PS Already exists " + schoolName);
 				}
-				cnt++;
 			}
 		}
 

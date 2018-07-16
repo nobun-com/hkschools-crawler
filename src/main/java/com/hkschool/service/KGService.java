@@ -23,6 +23,8 @@ public class KGService {
 	@Resource
 	private KGJpaRepository schoolJpaRepository;
 
+	int cnt = 0;
+
 	public void pull() throws IOException {
 		
 		Map<String, String> districts = new HashMap<String, String>();
@@ -50,6 +52,10 @@ public class KGService {
 			} catch (Exception e) {
 			}
 		}
+		
+		System.out.println("**********************************");
+		System.out.println(cnt + " kindergarten need to pull again");
+		System.out.println("**********************************");
 	}
 
 	public void pull(String district, String displayTextDistrict) throws IOException {
@@ -59,7 +65,6 @@ public class KGService {
 		Element mainTable = totalTables.get(8); // school list
 		Element tableBody = mainTable.getElementsByTag("tbody").get(0);
 		Elements schools = tableBody.getElementsByTag("td");
-		int cnt = 0;
 
 		Pattern pattern = Pattern.compile("[0-9]+");
 
@@ -75,14 +80,14 @@ public class KGService {
 					try {
 						schoolJpaRepository.save(pull(displayTextDistrict, schoolName, schoolId));
 					} catch (Exception e) {
-						System.out.println("Failed to add " + schoolName + " " + cnt);
+						cnt++;
+						System.out.println("Failed to add KG " + schoolName + " failed count : " + cnt);
 						System.out.println("Error : " + e.getMessage());
 					}
-					System.out.println("Added " + schoolName + " " + cnt);
+					System.out.println("KG Added " + schoolName);
 				} else {
-					System.out.println("Already exists " + schoolName + " " + cnt);
+					System.out.println("KG Already exists " + schoolName);
 				}
-				cnt++;
 			}
 		}
 	}

@@ -39,8 +39,7 @@ public class HKSKGService {
 				.getBody();
 		JSONArray records = (JSONArray) jsonResponse.getObject().get("data");
 
-		int cnt1 = 0;
-		int cnt2 = 0;
+		int cnt = 0;
 		for (int index = 0; index < records.length(); index++) {
 			JSONArray elements = (JSONArray) records.get(index);
 			String element = (String) elements.get(0);
@@ -53,12 +52,13 @@ public class HKSKGService {
 				if (kGEntity != null) {
 					try {
 						schoolJpaRepository.save(kGEntity);
-						System.out.println("updated : " + schoolName + " " + cnt1++);
+						System.out.println("KG updated : " + schoolName);
 					} catch (Exception e) {
-						System.out.println("Error : " + e.getMessage());
+						cnt++;
+						System.out.println("failed to update KG : " + cnt);
 					}
 				} else {
-					System.out.println("not found to updadte : " + schoolName + " " + cnt2++);
+					System.out.println("KG not found to updadte : " + schoolName);
 				}
 			}
 		}

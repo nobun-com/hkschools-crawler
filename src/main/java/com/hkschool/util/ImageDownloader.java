@@ -32,29 +32,33 @@ public class ImageDownloader {
 
 	public String saveImage(String imageUrl, String dir) throws IOException {
 
-		String uuid = UUID.randomUUID().toString();
+		try {
+			String uuid = UUID.randomUUID().toString();
 
-		URL sourceImageUrl = new URL(imageUrl);
-		InputStream is = sourceImageUrl.openStream();
+			URL sourceImageUrl = new URL(imageUrl);
+			InputStream is = sourceImageUrl.openStream();
 
-		File file = File.createTempFile(uuid, ".png");
-		String imagePath = "hkschool/" + dir + "/" + uuid + ".png";
-		OutputStream os = new FileOutputStream(file);
-		
-		byte[] b = new byte[2048];
-		int length;
+			File file = File.createTempFile(uuid, ".png");
+			String imagePath = "hkschool/" + dir + "/" + uuid + ".png";
+			OutputStream os = new FileOutputStream(file);
+			
+			byte[] b = new byte[2048];
+			int length;
 
-		while ((length = is.read(b)) != -1) {
-			os.write(b, 0, length);
-		}
+			while ((length = is.read(b)) != -1) {
+				os.write(b, 0, length);
+			}
 
-		is.close();
-		os.close();
-		AWSCredentials credentials = new BasicAWSCredentials(awsCredentialsAccessKey, awsCredentialsSecretKey);
-		AmazonS3 s3client = new AmazonS3Client(credentials);
-		s3client.putObject(new PutObjectRequest(awsCredentialsBucketName, imagePath, file).withCannedAcl(CannedAccessControlList.PublicRead));
-		URL url = s3client.getUrl(awsCredentialsBucketName, imagePath);
-		return url.toExternalForm();
+			is.close();
+			os.close();
+			AWSCredentials credentials = new BasicAWSCredentials(awsCredentialsAccessKey, awsCredentialsSecretKey);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+			s3client.putObject(new PutObjectRequest(awsCredentialsBucketName, imagePath, file).withCannedAcl(CannedAccessControlList.PublicRead));
+			URL url = s3client.getUrl(awsCredentialsBucketName, imagePath);
+			return url.toExternalForm();
+			
+		} catch (Exception e) { }
+		return null;
 	}
 
 }
