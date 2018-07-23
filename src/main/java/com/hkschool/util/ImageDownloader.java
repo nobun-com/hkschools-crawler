@@ -57,7 +57,9 @@ public class ImageDownloader {
 			URL url = s3client.getUrl(awsCredentialsBucketName, imagePath);
 			return url.toExternalForm();
 			
-		} catch (Exception e) { }
+		} catch (Exception e) {
+			System.out.println("Failed to download image " + imageUrl);
+		}
 		return null;
 	}
 
