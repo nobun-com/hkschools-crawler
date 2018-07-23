@@ -1,6 +1,7 @@
 package com.hkschool.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -289,7 +290,8 @@ public void pull() throws IOException {
 		schoolEntity.setNumberOfExamPerYear(NumberofExamperyear); 
 		schoolEntity.setStreamingArrangement(Streamingarrangement);   
 		schoolEntity.setDiversifiedAssessmentForLearning(DiversifiedAssessmentforLearning);
-		
+		schoolEntity.setCreatedOn(new Date());
+
 		return schoolEntity;
 	}
 

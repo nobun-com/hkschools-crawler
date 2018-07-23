@@ -1,6 +1,8 @@
 
 package com.hkschool.models;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -631,6 +633,11 @@ public class SSEntity {
 	@Lob
 	String Remarks;
 
+	@Column(name="created_on")
+	Date createdOn;
+	
+	@Column(name="updated_on")
+	Date updatedOn;
 	
 	public Long getId() {
 		return id;
@@ -1604,7 +1611,18 @@ public class SSEntity {
 	public void setImageTop(String imageTop) {
 		this.imageTop = imageTop;
 	}
-	
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+	public Date getUpdatedOn() {
+		return updatedOn;
+	}
+	public void setUpdatedOn(Date updatedOn) {
+		this.updatedOn = updatedOn;
+	}
 	
 }
 	

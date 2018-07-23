@@ -1,6 +1,7 @@
 package com.hkschool.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -356,6 +357,7 @@ public class KGService {
 		schoolEntity.setApplicationFee(Applicationfee);
 		schoolEntity.setRegistrationFeeHalf_Daysession(registrationsHalfApplicationfee);
 		schoolEntity.setRegistrationFeeWhole_Daysession(registrationfeeWholeApplicationfee);
+		schoolEntity.setCreatedOn(new Date());		
 
 		return schoolEntity;
 	}

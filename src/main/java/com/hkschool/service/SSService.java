@@ -1,6 +1,7 @@
 package com.hkschool.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -320,7 +321,7 @@ public class SSService {
 		schoolEntity.setParent_TeacherAssociation(Parent_TeacherAssociation);
 		schoolEntity.setStudentUnion_Association(StudentUnion_Association);
 		schoolEntity.setPastStudentsAssociation_SchoolAlumniAssociation(PastStudentsAssociation_SchoolAlumniAssociation);
-
+		schoolEntity.setCreatedOn(new Date());
 		return schoolEntity;
 	}
 

@@ -1,6 +1,7 @@
 package com.hkschool.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,12 +32,6 @@ public class HKSSSService {
 	@Resource
 	ImageDownloader imageDownloader;
 
-	//@Value(value = "${images.path}")
-	//String imagePath = "";
-
-	//@Value(value = "${images.pathTop}")
-	//String imagePathTop = "";
-
 	public void pull() throws Exception {
 		JsonNode jsonResponse = Unirest.get("https://www.schooland.hk/ajax/server_processing.php?draw=1").asJson()
 				.getBody();
@@ -53,6 +48,7 @@ public class HKSSSService {
 				SSEntity sSEntity = pull(schoolId, schoolName);
 				if (sSEntity != null) {
 					try {
+						sSEntity.setUpdatedOn(new Date());
 						schoolJpaRepository.save(sSEntity);
 						System.out.println("SS Updated " + schoolName);
 					} catch (Exception e) {
