@@ -80,7 +80,8 @@ public void pull() throws IOException {
 				if(schoolName.isEmpty()) {
 					continue;
 				}
-				if(pSchoolJpaRepository.findBySchoolName(schoolName) == null){
+				PSEntity psEntity = pSchoolJpaRepository.findBySchoolId(schoolId);
+				if(psEntity == null){
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 						System.out.println("PS Added " + schoolName);

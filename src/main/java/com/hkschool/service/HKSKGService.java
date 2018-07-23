@@ -62,23 +62,25 @@ public class HKSKGService {
 
 	private KGEntity pull(String schoolId, String schoolName) throws IOException {
 		
-		KGEntity kGEntity = schoolJpaRepository.findBySchoolName(schoolName);
+		KGEntity kGEntity = null;
 		
 		try {
 			
 			Document doc = Jsoup.connect("https://www.schooland.hk/kg/" + schoolId).get();
 			
+			String regex = "[0-9]{8}";
+			Pattern p = Pattern.compile(regex);
+			String contact = doc.getElementsByClass("contact").get(0).text();
+			Matcher m = p.matcher(contact);
+			
+			if(m.find()) {
+				String tel = m.group(0);
+				tel = "%" + tel.substring(0, 4) + " " + tel.substring(4) + "%";
+				kGEntity = schoolJpaRepository.findByTel(tel);
+			}
+			
 			if(kGEntity == null) {
-				String regex = "[0-9]{8}";
-				Pattern p = Pattern.compile(regex);
-				String contact = doc.getElementsByClass("contact").get(0).text();
-				Matcher m = p.matcher(contact);
-				
-				if(m.find()) {
-					String tel = m.group(0);
-					tel = "%" + tel.substring(0, 4) + " " + tel.substring(4) + "%";
-					kGEntity = schoolJpaRepository.findByTel(tel);
-				}
+				kGEntity = schoolJpaRepository.findBySchoolName(schoolName);
 			}
 			
 			if(kGEntity == null) {

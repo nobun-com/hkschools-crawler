@@ -8,7 +8,8 @@ import com.hkschool.models.PSEntity;
 
 public interface PSJpaRepository extends PagingAndSortingRepository<PSEntity, Long> {
 
-	PSEntity findBySchoolId(String schoolId);
+	@Query(value = "select * from primary_school p where p.school_id = :schoolId limit 1", nativeQuery = true)
+	PSEntity findBySchoolId(@Param(value = "schoolId") String schoolId);
 
 	@Query(value = "select * from primary_school p where p.school_name = :schoolName limit 1", nativeQuery = true)
 	PSEntity findBySchoolName(@Param(value = "schoolName") String schoolName);

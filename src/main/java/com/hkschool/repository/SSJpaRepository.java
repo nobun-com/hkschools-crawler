@@ -7,7 +7,8 @@ import com.hkschool.models.SSEntity;
 
 public interface SSJpaRepository extends PagingAndSortingRepository<SSEntity, Long> {
 
-	SSEntity findBySchoolId(String schoolId);
+	@Query(value = "select * from secondary_school s where s.school_id = :schoolId limit 1", nativeQuery = true)
+	SSEntity findBySchoolId(@Param(value = "schoolId") String schoolId);
 
 	@Query(value = "select * from secondary_school s where s.school_name = :schoolName limit 1", nativeQuery = true)
 	SSEntity findBySchoolName(@Param(value = "schoolName") String schoolName);

@@ -79,7 +79,7 @@ public class KGService {
 				if(schoolName.isEmpty()) {
 					continue;
 				}
-				KGEntity kgEntity = schoolJpaRepository.findBySchoolName(schoolName);
+				KGEntity kgEntity = schoolJpaRepository.findBySchoolId(schoolId);
 				if (kgEntity == null) {
 					try {
 						schoolJpaRepository.save(pull(displayTextDistrict, schoolName, schoolId));

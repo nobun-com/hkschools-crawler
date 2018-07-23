@@ -82,7 +82,8 @@ public class SSService {
 					if(schoolName.isEmpty()) {
 						continue;
 					}
-					if (sSchoolJpaRepository.findBySchoolName(schoolName) == null) {
+					SSEntity sSEntity = sSchoolJpaRepository.findBySchoolId(schoolId);
+					if (sSEntity == null) {
 						try {
 							sSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 							System.out.println("SS Added " + schoolName);
