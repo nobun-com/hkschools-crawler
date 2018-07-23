@@ -22,7 +22,7 @@ import com.hkschool.repository.SSJpaRepository;
 public class SSService {
 
 	@Resource
-	private SSJpaRepository pSchoolJpaRepository;
+	private SSJpaRepository sSchoolJpaRepository;
 
 	int cnt = 0;
 
@@ -79,12 +79,12 @@ public class SSService {
 				if (url != null && matcher.find()) {
 					String schoolName = link.text().replaceAll("[0-9A-Za-z '\\-_\\.\\(\\)&õ]+", "");
 					String schoolId = matcher.group(1);
-					if (pSchoolJpaRepository.findBySchoolName(schoolName) == null) {
+					if (sSchoolJpaRepository.findBySchoolName(schoolName) == null) {
 						try {
-							cnt++;
-							pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
+							sSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 							System.out.println("SS Added " + schoolName);
 						} catch (Exception e) {
+							cnt++;
 							System.out.println("Failed to add SS " + schoolName + " failed count : " + cnt);
 							System.out.println("Error : " + e.getMessage());
 						}
