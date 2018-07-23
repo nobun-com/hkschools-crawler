@@ -31,6 +31,10 @@ public class ImageDownloader {
 	private String awsCredentialsBucketName = "";
 
 	public String saveImage(String imageUrl, String dir) throws IOException {
+		
+		if(imageUrl == null || imageUrl.isEmpty()) {
+			return null;
+		}
 
 		try {
 			String uuid = UUID.randomUUID().toString();

@@ -75,8 +75,11 @@ public void pull() throws IOException {
 			String url = link.attr("href");
 			Matcher matcher = pattern.matcher(url);
 			if (url != null && matcher.find()) {
-				String schoolName = link.text().replaceAll("[0-9A-Za-z '\\-_\\.\\(\\)&õ]+", "");
+				String schoolName = link.toString().replaceAll(".*<br>|</a>", "");
 				String schoolId = matcher.group(1);
+				if(schoolName.isEmpty()) {
+					continue;
+				}
 				if(pSchoolJpaRepository.findBySchoolName(schoolName) == null){
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
