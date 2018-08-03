@@ -51,6 +51,8 @@ public void pull() throws IOException {
 			try {
 				pull(districtId, districts.get(districtId));
 			} catch (Exception e) {
+				System.out.println("Failed to pull primery schools form district " + districts.get(districtId) + " need to re-run crawler");
+				System.out.println("Error : " + e.getMessage());
 			}
 		}
 		System.out.println("**********************************");

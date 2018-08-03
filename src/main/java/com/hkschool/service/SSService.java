@@ -51,7 +51,8 @@ public class SSService {
 			try {
 				pull(districtId, districts.get(districtId));
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Failed to pull secondary schools form district " + districts.get(districtId) + " need to re-run crawler");
+				System.out.println("Error : " + e.getMessage());
 			}
 		}
 		System.out.println("**********************************");

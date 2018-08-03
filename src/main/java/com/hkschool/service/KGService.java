@@ -51,6 +51,8 @@ public class KGService {
 			try {
 				pull(district, districts.get(district));
 			} catch (Exception e) {
+				System.out.println("Failed to pull kindergarten form district " + districts.get(district) + " need to re-run crawler");
+				System.out.println("Error : " + e.getMessage());
 			}
 		}
 		
