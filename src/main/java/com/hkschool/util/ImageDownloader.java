@@ -30,6 +30,14 @@ public class ImageDownloader {
 	@Value("${awscredentialsbucketname}")
 	private String awsCredentialsBucketName = "";
 
+	private AmazonS3 s3client;
+	
+	private void initS3Client() {
+		AWSCredentials credentials = new BasicAWSCredentials(awsCredentialsAccessKey, awsCredentialsSecretKey);
+		s3client = new AmazonS3Client(credentials);
+		System.out.println("[DEBUG] checked.jpg exist? " + s3client.doesObjectExist(awsCredentialsBucketName, "images/checked.jpg"));
+	}
+	
 	public String saveImage(String imageUrl, String dir) throws IOException {
 		
 		if(imageUrl == null || imageUrl.isEmpty()) {
@@ -43,7 +51,7 @@ public class ImageDownloader {
 			InputStream is = sourceImageUrl.openStream();
 
 			File file = File.createTempFile(uuid, ".png");
-			String imagePath = "hkschool/" + dir + "/" + uuid + ".png";
+			String imagePath = "hkschools/" + dir + "/" + uuid + ".png";
 			OutputStream os = new FileOutputStream(file);
 			
 			byte[] b = new byte[2048];
@@ -55,14 +63,16 @@ public class ImageDownloader {
 
 			is.close();
 			os.close();
-			AWSCredentials credentials = new BasicAWSCredentials(awsCredentialsAccessKey, awsCredentialsSecretKey);
-			AmazonS3 s3client = new AmazonS3Client(credentials);
+			
+			if (s3client == null) {
+				initS3Client();
+			}
 			s3client.putObject(new PutObjectRequest(awsCredentialsBucketName, imagePath, file).withCannedAcl(CannedAccessControlList.PublicRead));
 			URL url = s3client.getUrl(awsCredentialsBucketName, imagePath);
 			return url.toExternalForm();
-			
 		} catch (Exception e) {
 			System.out.println("Failed to download image " + imageUrl);
+			e.printStackTrace();
 		}
 		return null;
 	}
