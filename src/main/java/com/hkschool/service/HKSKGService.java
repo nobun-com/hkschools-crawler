@@ -12,6 +12,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.KGEntity;
@@ -23,6 +24,12 @@ import com.mashape.unirest.http.Unirest;
 @Component
 public class HKSKGService {
 
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private KGJpaRepository schoolJpaRepository;
 
@@ -68,7 +75,7 @@ public class HKSKGService {
 			String crawlUrl = "https://www.schooland.hk/kg/" + schoolId;
 			System.out.println("Crawling: " + crawlUrl);
 			
-			Document doc = Jsoup.connect(crawlUrl).userAgent("Mozilla").get();
+			Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 			
 			String regex = "[0-9]{8}";
 			Pattern p = Pattern.compile(regex);

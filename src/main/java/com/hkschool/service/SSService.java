@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.SSEntity;
@@ -21,6 +22,12 @@ import com.hkschool.repository.SSJpaRepository;
 @Component
 public class SSService {
 
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private SSJpaRepository sSchoolJpaRepository;
 
@@ -58,14 +65,13 @@ public class SSService {
 		System.out.println("**********************************");
 		System.out.println(cnt + " secondary schools need to pull again");
 		System.out.println("**********************************");
-
 	}
 
 	public void pull(String districtId, String district) throws IOException {
 		String crawlUrl = "https://www.chsc.hk/ssp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=" + districtId + "&sch_type=&sch_name=";
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(0); // school list
@@ -91,11 +97,12 @@ public class SSService {
 						try {
 							sSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 							System.out.println("SS Added " + schoolName);
+							Thread.sleep(timeout);
 						} catch (Exception e) {
 							cnt++;
 							System.out.println("Failed to add SS " + schoolName + " failed count : " + cnt);
 							System.out.println("Error : " + e.getMessage());
-
+							e.printStackTrace();
 						}
 					} else {
 						System.out.println("SS Already exists " + schoolName);
@@ -110,7 +117,7 @@ public class SSService {
 		String crawlUrl = "https://www.chsc.hk/ssp2017/sch_detail.php?lang_id=2&sch_id="+ schoolId;
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(0); // school address

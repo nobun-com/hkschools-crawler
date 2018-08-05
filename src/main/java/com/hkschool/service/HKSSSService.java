@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.SSEntity;
@@ -24,8 +25,12 @@ import com.mashape.unirest.http.Unirest;
 @Component
 public class HKSSSService {
 
-	static int cnt = 0;
-
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private SSJpaRepository schoolJpaRepository;
 
@@ -37,6 +42,7 @@ public class HKSSSService {
 				.getBody();
 		JSONArray records = (JSONArray) jsonResponse.getObject().get("data");
 
+		int cnt = 0;
 		for (int index = 0; index < records.length(); index++) {
 			JSONObject elements = (JSONObject) records.get(index);
 			String element = (String) elements.get("0");
@@ -70,7 +76,7 @@ public class HKSSSService {
 			String crawlUrl = "https://www.schooland.hk/ss/" + schoolId;
 			System.out.println("Crawling: " + crawlUrl);
 			
-			Document doc = Jsoup.connect(crawlUrl).userAgent("Mozilla").get();
+			Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 			if(sSEntity == null) {
 				String regex = "[0-9]{8}";
 				Pattern p = Pattern.compile(regex);

@@ -4,30 +4,28 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import com.hkschool.models.KGEntity;
 import com.hkschool.repository.KGJpaRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
 @Component
 public class MSKGService {
 
-	 private static final char[] area = null;
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private KGJpaRepository schoolJpaRepository;
-	private Object document;
-	private Document doc;
-	private KGJpaRepository SchoolJpaRepository;
-
+	
 	public void pull() {
 		for (int pageIndex = 0; pageIndex < 19; pageIndex++) {
 			pull(pageIndex);
@@ -41,7 +39,7 @@ public class MSKGService {
 		try {
 			String crawlUrl = "https://www.myschool.hk/kindergarten/Ranking.php";
 			System.out.println("Crawling: " + crawlUrl);
-			doc = Jsoup.connect(crawlUrl).get();
+			doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -76,7 +74,7 @@ public class MSKGService {
 		String crawlUrl = "https://www.myschool.hk/school.php?sid="+ schoolId;
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		//Document doc = Jsoup.parse(MSKGHtml.str);
 		Elements elements = doc.getElementsByClass("detail-container");
 		Elements item = elements.get(6).getElementsByClass("detail-item");//School-other-chrges

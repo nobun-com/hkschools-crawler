@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.KGEntity;
@@ -21,6 +22,12 @@ import com.hkschool.repository.KGJpaRepository;
 @Component
 public class KGService {
 
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private KGJpaRepository schoolJpaRepository;
 
@@ -62,10 +69,10 @@ public class KGService {
 	}
 
 	public void pull(String district, String displayTextDistrict) throws IOException {
-		String crawlUrl = "https://kgp2017.highlight.hk/edb/school.php?lang=tc&district="+district;
+		String crawlUrl = "http://kgp2017.highlight.hk/edb/school.php?lang=tc&district="+district;
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByClass("font_content");
 
 		Element mainTable = totalTables.get(8); // school list
@@ -88,12 +95,14 @@ public class KGService {
 				if (kgEntity == null) {
 					try {
 						schoolJpaRepository.save(pull(displayTextDistrict, schoolName, schoolId));
+						System.out.println("KG Added " + schoolName);
+						Thread.sleep(timeout);
 					} catch (Exception e) {
 						cnt++;
 						System.out.println("Failed to add KG " + schoolName + " failed count : " + cnt);
 						System.out.println("Error : " + e.getMessage());
+						e.printStackTrace();
 					}
-					System.out.println("KG Added " + schoolName);
 				} else {
 					System.out.println("KG Already exists " + schoolName);
 				}
@@ -104,10 +113,10 @@ public class KGService {
 	// pull("ABERDEEN BAPTIST CHURCH PAK KWONG KINDERGARTEN", "6355");
 
 	private KGEntity pull(String district, String schoolName, String schoolId) throws IOException {
-		String crawlUrl = "https://kgp2017.highlight.hk/edb/schoolinfo.php?schid=" + schoolId + "&lang=tc&district=&category=&voucher=&schoolname=";
+		String crawlUrl = "http://kgp2017.highlight.hk/edb/schoolinfo.php?schid=" + schoolId + "&lang=tc&district=&category=&voucher=&schoolname=";
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByClass("font_content");
 
 		Element mainTable = totalTables.get(8); // school address

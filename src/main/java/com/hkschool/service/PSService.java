@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.hkschool.models.PSEntity;
@@ -21,12 +22,18 @@ import com.hkschool.repository.PSJpaRepository;
 @Component
 public class PSService {
 
+	@Value("${crawler.pull.useragent}")
+	private String userAgent = "";
+	
+	@Value("${crawler.pull.timeout}")
+	private int timeout = 0;
+	
 	@Resource
 	private PSJpaRepository pSchoolJpaRepository;
 
 	int cnt = 0;
 	
-public void pull() throws IOException {
+	public void pull() throws IOException {
 		
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("1", "中西區");
@@ -58,15 +65,13 @@ public void pull() throws IOException {
 		System.out.println("**********************************");
 		System.out.println(cnt + " primery schools need to pull again");
 		System.out.println("**********************************");
-
-}
+	}
 	
-
 	public void pull(String districtId, String district) throws IOException {
 		String crawlUrl = "https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId+"&sch_type=&sch_name=";
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(1); // school list
@@ -90,10 +95,12 @@ public void pull() throws IOException {
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
 						System.out.println("PS Added " + schoolName);
+						Thread.sleep(timeout);
 					} catch (Exception e) {
 						cnt++;
 						System.out.println("Failed to add PS " + schoolName + " failed count : " + cnt);
 						System.out.println("Error : " + e.getMessage());
+						e.printStackTrace();
 					}
 				} else {
 					System.out.println("PS Already exists " + schoolName);
@@ -107,7 +114,7 @@ public void pull() throws IOException {
 		String crawlUrl = "https://www.chsc.hk/psp2017/sch_detail.php?lang_id=2&sch_id=" + schoolId;
 		System.out.println("Crawling: " + crawlUrl);
 		
-		Document doc = Jsoup.connect(crawlUrl).get();
+		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
 		Elements totalTables = doc.getElementsByTag("table");
 		
 		Element mainTable = totalTables.get(0); // school address
