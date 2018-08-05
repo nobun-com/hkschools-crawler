@@ -63,7 +63,10 @@ public void pull() throws IOException {
 	
 
 	public void pull(String districtId, String district) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId+"&sch_type=&sch_name=").get();
+		String crawlUrl = "https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId+"&sch_type=&sch_name=";
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(1); // school list
@@ -101,7 +104,10 @@ public void pull() throws IOException {
 	}
 	
 	private PSEntity pull(String district, String schoolName, String schoolId) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/psp2017/sch_detail.php?lang_id=2&sch_id=" + schoolId).get();
+		String crawlUrl = "https://www.chsc.hk/psp2017/sch_detail.php?lang_id=2&sch_id=" + schoolId;
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByTag("table");
 		
 		Element mainTable = totalTables.get(0); // school address

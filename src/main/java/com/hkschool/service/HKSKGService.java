@@ -65,8 +65,10 @@ public class HKSKGService {
 		KGEntity kGEntity = null;
 		
 		try {
+			String crawlUrl = "https://www.schooland.hk/kg/" + schoolId;
+			System.out.println("Crawling: " + crawlUrl);
 			
-			Document doc = Jsoup.connect("https://www.schooland.hk/kg/" + schoolId).get();
+			Document doc = Jsoup.connect(crawlUrl).userAgent("Mozilla").get();
 			
 			String regex = "[0-9]{8}";
 			Pattern p = Pattern.compile(regex);

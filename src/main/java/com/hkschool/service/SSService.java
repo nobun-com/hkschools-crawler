@@ -62,7 +62,10 @@ public class SSService {
 	}
 
 	public void pull(String districtId, String district) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/ssp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=" + districtId + "&sch_type=&sch_name=").get();
+		String crawlUrl = "https://www.chsc.hk/ssp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=" + districtId + "&sch_type=&sch_name=";
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(0); // school list
@@ -92,6 +95,7 @@ public class SSService {
 							cnt++;
 							System.out.println("Failed to add SS " + schoolName + " failed count : " + cnt);
 							System.out.println("Error : " + e.getMessage());
+
 						}
 					} else {
 						System.out.println("SS Already exists " + schoolName);
@@ -103,7 +107,10 @@ public class SSService {
 	}
 
 	private SSEntity pull(String district, String schoolName, String schoolId) throws IOException {
-		Document doc = Jsoup.connect("http://www.chsc.hk/ssp2017/sch_detail.php?lang_id=2&sch_id="+ schoolId).get();
+		String crawlUrl = "https://www.chsc.hk/ssp2017/sch_detail.php?lang_id=2&sch_id="+ schoolId;
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByTag("table");
 
 		Element mainTable = totalTables.get(0); // school address

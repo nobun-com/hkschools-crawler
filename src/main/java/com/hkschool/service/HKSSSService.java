@@ -67,8 +67,10 @@ public class HKSSSService {
 		SSEntity sSEntity = schoolJpaRepository.findBySchoolName(schoolName);
 
 		try {
-			Document doc = Jsoup.connect("https://www.schooland.hk/ss/" + schoolId).get();
+			String crawlUrl = "https://www.schooland.hk/ss/" + schoolId;
+			System.out.println("Crawling: " + crawlUrl);
 			
+			Document doc = Jsoup.connect(crawlUrl).userAgent("Mozilla").get();
 			if(sSEntity == null) {
 				String regex = "[0-9]{8}";
 				Pattern p = Pattern.compile(regex);

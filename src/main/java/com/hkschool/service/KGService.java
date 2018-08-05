@@ -62,7 +62,10 @@ public class KGService {
 	}
 
 	public void pull(String district, String displayTextDistrict) throws IOException {
-		Document doc = Jsoup.connect("http://kgp2017.highlight.hk/edb/school.php?lang=tc&district="+district).get();
+		String crawlUrl = "https://kgp2017.highlight.hk/edb/school.php?lang=tc&district="+district;
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByClass("font_content");
 
 		Element mainTable = totalTables.get(8); // school list
@@ -101,7 +104,10 @@ public class KGService {
 	// pull("ABERDEEN BAPTIST CHURCH PAK KWONG KINDERGARTEN", "6355");
 
 	private KGEntity pull(String district, String schoolName, String schoolId) throws IOException {
-		Document doc = Jsoup.connect("http://kgp2017.highlight.hk/edb/schoolinfo.php?schid=" + schoolId + "&lang=tc&district=&category=&voucher=&schoolname=").get();
+		String crawlUrl = "https://kgp2017.highlight.hk/edb/schoolinfo.php?schid=" + schoolId + "&lang=tc&district=&category=&voucher=&schoolname=";
+		System.out.println("Crawling: " + crawlUrl);
+		
+		Document doc = Jsoup.connect(crawlUrl).get();
 		Elements totalTables = doc.getElementsByClass("font_content");
 
 		Element mainTable = totalTables.get(8); // school address
