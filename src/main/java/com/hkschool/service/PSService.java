@@ -35,31 +35,33 @@ public class PSService {
 	
 	public void pull() throws IOException {
 		
+		// below district ids are pulled from https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=1
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("1", "中西區");
 		districts.put("2", "港島東區");
 		districts.put("3", "離島區");
 		districts.put("4", "南區");
 		districts.put("5", "灣仔區");
-		districts.put("6", "葵青區");
-		districts.put("7", "荃灣區");
-		districts.put("8", "屯門區");
-		districts.put("9", "元朗區");
-		districts.put("10", "北區");
-		districts.put("11", "沙田區");
-		districts.put("12", "大埔區");
-		districts.put("13", "九龍城區");
-		districts.put("14", "觀塘區");
-		districts.put("15", "西貢區");
-		districts.put("16", "深水埗區");
-		districts.put("17", "黃大仙區");
-		districts.put("18", "油尖旺區");
+		districts.put("6", "九龍城區");
+		districts.put("7", "觀塘區");
+		districts.put("8", "西貢區");
+		districts.put("9", "深水埗區");
+		districts.put("10", "黃大仙區");
+		districts.put("11", "油尖旺區");
+		districts.put("12", "北區");
+		districts.put("13", "沙田區");
+		districts.put("14", "大埔區");
+		districts.put("15", "葵青區");
+		districts.put("16", "荃灣區");
+		districts.put("17", "屯門區");
+		districts.put("18", "元朗區");
 		for (String districtId : districts.keySet()) {
 			try {
 				pull(districtId, districts.get(districtId));
 			} catch (Exception e) {
-				System.out.println("Failed to pull primery schools form district " + districts.get(districtId) + " need to re-run crawler");
+				System.out.println("Failed to pull primary schools from district " + districts.get(districtId) + " need to re-run crawler");
 				System.out.println("Error : " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		System.out.println("**********************************");
@@ -68,7 +70,7 @@ public class PSService {
 	}
 	
 	public void pull(String districtId, String district) throws IOException {
-		String crawlUrl = "https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId+"&sch_type=&sch_name=";
+		String crawlUrl = "https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId;
 		System.out.println("Crawling: " + crawlUrl);
 		
 		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();

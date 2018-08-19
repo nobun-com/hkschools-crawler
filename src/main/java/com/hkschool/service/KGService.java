@@ -35,6 +35,7 @@ public class KGService {
 
 	public void pull() throws IOException {
 		
+		// below districts are pulled from view-source:http://kgp2017.highlight.hk/edb/school.php
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("central", "中西區");
 		districts.put("hkeast", "港島東區");
@@ -58,8 +59,9 @@ public class KGService {
 			try {
 				pull(district, districts.get(district));
 			} catch (Exception e) {
-				System.out.println("Failed to pull kindergarten form district " + districts.get(district) + " need to re-run crawler");
+				System.out.println("Failed to pull kindergartens from district " + districts.get(district) + " need to re-run crawler");
 				System.out.println("Error : " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
