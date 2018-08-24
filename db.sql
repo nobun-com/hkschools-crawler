@@ -418,4 +418,5 @@ ALTER TABLE `secondary_school`
 	ADD COLUMN `created_on` DATETIME NULL,
 	ADD COLUMN `updated_on` DATETIME NULL AFTER `created_on`;
 
-
+ALTER TABLE `primary_school`
+	ADD COLUMN `school_network` LONGTEXT NULL AFTER `school_name`;

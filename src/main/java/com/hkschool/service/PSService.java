@@ -117,6 +117,13 @@ public class PSService {
 		System.out.println("Crawling: " + crawlUrl);
 		
 		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
+		
+		String schoolNetwork = "0";
+		try{
+			Element schoolNetworkEle = doc.getElementsByClass("xxzl-info-bh").get(0);
+			schoolNetwork = schoolNetworkEle.text().split("校網編號 : ")[1];
+		} catch(Exception e) {}
+		
 		Elements totalTables = doc.getElementsByTag("table");
 		
 		Element mainTable = totalTables.get(0); // school address
@@ -232,6 +239,8 @@ public class PSService {
 		
 		schoolEntity.setSchoolName(schoolName);
 		schoolEntity.setSchoolId(schoolId);
+		schoolEntity.setSchoolNetwork(schoolNetwork);
+		
 		schoolEntity.setSource("Goverment");
 		schoolEntity.setAddress(address);
 		schoolEntity.setDistrict(district);

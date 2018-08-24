@@ -30,7 +30,6 @@ public class KGEntity {
 	@Lob
 	String imageTop;
 	
-	
 	@Column(name="schoolHistory")
 	@Lob
 	String schoolHistory;

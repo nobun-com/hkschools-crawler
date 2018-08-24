@@ -23,6 +23,7 @@ public class PSEntity {
 	String schoolFacilitiesTitle;
 	String schoolHistoryTitle;
 	String teachingSituationTitle;
+	String schoolNetwork;
 	
 	String image;
 	String imageTop;
@@ -1272,6 +1273,12 @@ public class PSEntity {
 	}
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
+	}
+	public String getSchoolNetwork() {
+		return schoolNetwork;
+	}
+	public void setSchoolNetwork(String schoolNetwork) {
+		this.schoolNetwork = schoolNetwork;
 	}
 	
 }
