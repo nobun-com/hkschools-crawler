@@ -78,39 +78,41 @@ public class SSService {
 
 		Element mainTable = totalTables.get(0); // school list
 		Elements schools = mainTable.getElementsByTag("tr");
-	
 		Pattern pattern = Pattern.compile("sch_detail.php\\?.*sch_id=([0-9]+)");
 
-		for (int index = 2; index < schools.size(); index++) {
-			try{
-				Element school = schools.get(index);
-				Element link = school.getElementsByTag("a").get(0);
-
-				String url = link.attr("href");
-				Matcher matcher = pattern.matcher(url);
-				if (url != null && matcher.find()) {
-					String schoolName = link.toString().replaceAll(".*<br>|</a>", "");
-					String schoolId = matcher.group(1);
-					if(schoolName.isEmpty()) {
-						continue;
-					}
-					SSEntity sSEntity = sSchoolJpaRepository.findBySchoolId(schoolId);
-					if (sSEntity == null) {
-						try {
-							sSchoolJpaRepository.save(pull(district, schoolName, schoolId));
-							System.out.println("SS Added " + schoolName);
-							Thread.sleep(timeout);
-						} catch (Exception e) {
-							cnt++;
-							System.out.println("Failed to add SS " + schoolName + " failed count : " + cnt);
-							System.out.println("Error : " + e.getMessage());
-							e.printStackTrace();
-						}
-					} else {
-						System.out.println("SS Already exists " + schoolName);
-					}
+		for (int index = 1; index < schools.size(); index++) {
+			Element school = schools.get(index);
+			Element link = school.getElementsByTag("a").get(0);
+			
+			String url = link.attr("href");
+			Matcher matcher = pattern.matcher(url);
+			if (url != null && matcher.find()) {
+				String schoolName = link.toString().replaceAll(".*<br>|</a>", "");
+				String schoolId = matcher.group(1);
+				if(schoolName.isEmpty()) {
+					continue;
 				}
-			} catch(Exception e) { }
+				Element schoolDistrict = school.getElementsByTag("td").get(3);	// <td class="col-a2 bb-2">黃大仙區</td>
+				if (!district.equals(schoolDistrict.text())) {
+					System.out.println("SS Skipped  " + schoolName + " which belongs to " + schoolDistrict.text());
+					continue;
+				}
+				SSEntity sSEntity = sSchoolJpaRepository.findBySchoolId(schoolId);
+				if (sSEntity == null) {
+					try {
+						sSchoolJpaRepository.save(pull(district, schoolName, schoolId));
+						System.out.println("SS Added " + schoolName + " to " + district);
+						Thread.sleep(timeout);
+					} catch (Exception e) {
+						cnt++;
+						System.out.println("Failed to add SS " + schoolName + " failed count : " + cnt);
+						System.out.println("Error : " + e.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					System.out.println("SS Already exists " + schoolName);
+				}
+			}
 		}
 
 	}

@@ -96,7 +96,7 @@ public class PSService {
 				if(psEntity == null){
 					try {
 						pSchoolJpaRepository.save(pull(district, schoolName, schoolId));
-						System.out.println("PS Added " + schoolName);
+						System.out.println("PS Added " + schoolName + " to " + district);
 						Thread.sleep(timeout);
 					} catch (Exception e) {
 						cnt++;

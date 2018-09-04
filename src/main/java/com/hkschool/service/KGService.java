@@ -97,7 +97,7 @@ public class KGService {
 				if (kgEntity == null) {
 					try {
 						schoolJpaRepository.save(pull(displayTextDistrict, schoolName, schoolId));
-						System.out.println("KG Added " + schoolName);
+						System.out.println("KG Added " + schoolName + " to " + district);
 						Thread.sleep(timeout);
 					} catch (Exception e) {
 						cnt++;
