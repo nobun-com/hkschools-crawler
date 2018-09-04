@@ -38,9 +38,9 @@ public class SSService {
 		// below district ids are pulled from https://www.chsc.hk/ssp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=1
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("1", "中西區");
-		districts.put("2", "港島東區");
+		districts.put("2", "香港東區");
 		districts.put("3", "離島區");
-		districts.put("4", "南區");
+		districts.put("4", "香港南區");
 		districts.put("5", "灣仔區");
 		districts.put("6", "九龍城區");
 		districts.put("7", "觀塘區");
@@ -82,7 +82,11 @@ public class SSService {
 
 		for (int index = 1; index < schools.size(); index++) {
 			Element school = schools.get(index);
-			Element link = school.getElementsByTag("a").get(0);
+			Elements anchors = school.getElementsByTag("a");
+			if (anchors == null || anchors.size() == 0) {
+				continue;
+			}
+			Element link = anchors.get(0);
 			
 			String url = link.attr("href");
 			Matcher matcher = pattern.matcher(url);

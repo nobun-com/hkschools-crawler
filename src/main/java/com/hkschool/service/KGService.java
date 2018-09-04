@@ -38,9 +38,9 @@ public class KGService {
 		// below districts are pulled from view-source:http://kgp2017.highlight.hk/edb/school.php
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("central", "中西區");
-		districts.put("hkeast", "港島東區");
+		districts.put("hkeast", "香港東區");
 		districts.put("islands", "離島區");
-		districts.put("southern", "南區");
+		districts.put("southern", "香港南區");
 		districts.put("wanchai", "灣仔區");
 		districts.put("kwaichung", "葵青區");
 		districts.put("tsuenwan", "荃灣區");
