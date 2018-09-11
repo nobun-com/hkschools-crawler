@@ -103,14 +103,14 @@ public class HKSPSService {
 		} catch(Exception e) { }
 
 		try {
-			row = rows.get(1);
+			row = rows.get(1); //cat
 			// String schoolCategoury = row.getElementsByTag("h4").get(0).text();
 			String schoolCategouryTitle = row.getElementsByTag("p").get(0).text();
 			pSEntity.setSchoolCategouryTitle(schoolCategouryTitle);
 		} catch(Exception e) { }
 
 		try {
-			row = rows.get(2);
+			row = rows.get(3); //history
 			String schoolHistory = row.getElementsByTag("p").get(0).text();
 			String schoolHistoryTitle = row.getElementsByTag("h4").get(0).text();
 			pSEntity.setSchoolHistoryTitle(schoolHistoryTitle);
@@ -119,7 +119,7 @@ public class HKSPSService {
 		} catch(Exception e) { }
 
 		try {
-			row = rows.get(3);
+			row = rows.get(4); // facility
 			String schoolFacilities = row.getElementsByTag("p").get(0).text();
 			String schoolFacilitiesTitle = row.getElementsByTag("h4").get(0).text();
 			pSEntity.setSchoolFacilitiesTitle(schoolFacilitiesTitle);
@@ -127,7 +127,7 @@ public class HKSPSService {
 		} catch(Exception e) { }
 
 		try {
-			row = rows.get(4);// Situation
+			row = rows.get(5);// Situation
 			String teachingSituation = row.getElementsByTag("p").get(0).text();
 			String teachingSituationTitle = row.getElementsByTag("h4").get(0).text();
 			pSEntity.setTeachingSituationTitle(teachingSituationTitle);
@@ -244,7 +244,6 @@ public class HKSPSService {
 
 			if (imageUrl == null || imageUrl.isEmpty()) {
 				try{
-					row = rows.get(9);// school images
 					row = doc.getElementsByClass("contact-pic").get(0);
 					Element link = row.getElementsByTag("img").get(0);
 
@@ -258,7 +257,6 @@ public class HKSPSService {
 
 			if (imageUrlTop == null || imageUrlTop.isEmpty()) {
 				try{
-					row = rows.get(0);// school imagesTop
 					row = doc.getElementsByClass("photo-box").get(0);
 					Element link1 = row.getElementsByTag("img").get(0);
 

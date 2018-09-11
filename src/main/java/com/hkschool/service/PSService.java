@@ -35,7 +35,7 @@ public class PSService {
 	
 	public void pull() throws IOException {
 		
-		// below district ids are pulled from https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=1
+		// below district ids are pulled from https://www.chsc.hk/psp2018/sch_list.php?lang_id=2&frmMode=pagebreak&district_id=1
 		Map<String, String> districts = new HashMap<String, String>();
 		districts.put("1", "中西區");
 		districts.put("2", "香港東區");
@@ -70,7 +70,7 @@ public class PSService {
 	}
 	
 	public void pull(String districtId, String district) throws IOException {
-		String crawlUrl = "https://www.chsc.hk/psp2017/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId;
+		String crawlUrl = "https://www.chsc.hk/psp2018/sch_list.php?lang_id=2&frmMode=pagebreak&district_id="+districtId;
 		System.out.println("Crawling: " + crawlUrl);
 		
 		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
@@ -117,7 +117,7 @@ public class PSService {
 	}
 	
 	private PSEntity pull(String district, String schoolName, String schoolId) throws IOException {
-		String crawlUrl = "https://www.chsc.hk/psp2017/sch_detail.php?lang_id=2&sch_id=" + schoolId;
+		String crawlUrl = "https://www.chsc.hk/psp2018/sch_detail.php?lang_id=2&sch_id=" + schoolId;
 		System.out.println("Crawling: " + crawlUrl);
 		
 		Document doc = Jsoup.connect(crawlUrl).userAgent(userAgent).get();
